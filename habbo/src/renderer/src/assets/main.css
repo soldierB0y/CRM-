@@ -1,0 +1,306 @@
+
+
+
+*{
+    box-sizing: border-box;
+    padding:0;
+    margin:0;
+    font-family: "Silkscreen", sans-serif !important;
+    font-weight: 400;
+    font-style: normal;
+    user-select: none;
+}
+
+.login
+{
+    width: 100%;
+    height: 100%;
+    max-width: 650px;
+    max-height: 400px;
+    color:#e6e6e6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    border-radius: 24px;
+    gap:10px;
+    border:1px solid #e6e6e6;
+    position: relative;
+    z-index: 2;
+    background-color: #1212124f;
+}
+
+.login p
+{
+    color:#e6e6e6;
+    font-size: 18px;
+}
+
+.login h1
+{
+    font-size: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.loginBody
+{
+    width: 100vw;
+    height: 100vh;
+    background-color: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login input
+{
+    width: 100%;
+    height: 45px;
+    font-size: 22px;
+    border-radius: 7px;
+
+}
+
+.submit
+{
+    width: 100%;
+    height: 45px;
+    font-size: 22px;
+    border-radius: 7px;
+    background-color: #dfdfdf;
+    color:#3c3c3c;
+    border:none;
+}
+
+.textbox
+{
+    padding-left: 10px;
+    background-color: #dfdfdf;
+    color:#3c3c3c;
+    border:none;
+    outline-color: white;
+}
+
+.submit:hover
+{
+    cursor: pointer;
+    background-color: white;
+}
+
+.picLogin
+{
+    width: 45%;
+    left: 50%;
+    top:2%;
+    position: absolute;
+    z-index:1;
+}
+
+
+.title
+{
+    position: absolute;
+    z-index: 1000;
+    top:10%;
+    font-size: 50px;
+    background-color:#e6e6e6;
+    padding: 20px;
+    border-radius: 10px;
+    color:#3c3c3c;
+}
+
+
+.visible
+{
+    display: block;
+}
+.invisible
+{
+    display:none;
+}
+
+.dark
+{
+    background-color: #121212;
+}
+
+.principal
+{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.menu
+{
+    background-color: #2e2e2e;
+    width:15%;
+    overflow: hidden;
+    max-width: 60px;
+    transition: .2s ease-in-out;
+    padding-top: 1%;
+}
+
+.menu:hover
+{
+    max-width: 15%;
+}
+
+
+
+.menu ul
+{
+    width: 100%;
+}
+
+.menu ul span
+{
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color:#e6e6e6;
+    transition: .2s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    gap:20%
+}
+
+.menu ul span:hover
+{
+    cursor: pointer;
+    background-color: white;
+    color:#121212;
+}
+
+.menu ul span img
+{
+    width: 40px;
+    filter: invert(.7);
+}
+
+.menu ul li
+{
+    list-style:none;
+}
+
+.tituloContainer
+{
+    font-size: 48px;
+    display: flex;
+    color:#e6e6e6;
+    width: 100%;
+    display: flex;
+    background: linear-gradient(360deg, rgba(46, 46, 46, 1) 0%, rgb(20, 20, 20) 50%);
+    padding-left: 20%;
+    max-height: 140px;
+    height: 15%;
+    align-items: center;
+    border-bottom: 1px solid black;
+    border-radius: 15px;
+}
+
+.principalCol
+{
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    padding: 5px;
+    gap: 10px;
+}
+
+.rounded
+{
+    border-radius: 50px;
+    
+}
+
+.containerCover
+{
+
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+    padding: 1%;
+}
+
+.containerCover div
+{
+    width: 50%;
+    height: 80vh;
+}
+
+.crud
+{
+        background: linear-gradient(360deg, rgba(46, 46, 46, 1) 0%, rgb(20, 20, 20) 50%);
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 20px;
+        padding: 10px;
+        justify-content: center;
+}
+
+.crud h2
+{
+    color:#e6e6e6;
+    width: 100%;
+    text-align: center;
+    
+}
+
+.crudForm
+{
+    width: 100% !important;
+    height: fit-content !important;
+    min-height: 125px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap:2%;
+    align-items: center;
+    justify-self: center;
+}
+
+.crudForm input, .crudForm select
+{
+    width: 45%;
+    max-width: 225px;
+    height:35px;
+    background-color: #e6e6e6;
+    outline-color: #dfdfdf;
+    font-size: 18px;
+    border-style: none;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+.buttonContainer
+{
+    width: 100% !important;
+    height: fit-content !important;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap:25px;
+    padding: 50px;
+    max-width: 600px;
+}
+
+.buttonContainer input
+{
+    width: 225px;
+    height: 35px;
+    
+}
+
+.buttonContainer input:hover
+{
+    background-color: white;
+    cursor: pointer;
+}
