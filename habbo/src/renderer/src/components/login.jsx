@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import apartment from '../assets/imagenes/apartment.png'
 import { useNavigate } from 'react-router-dom';
+import { TopBar } from './topBar';
 export const Login= ()=>{
     const navigator= useNavigate();
     const [userInfo, setUserInfo] = useState({ user: '', pass: '' });
@@ -14,13 +15,15 @@ export const Login= ()=>{
     }
     else
     {
-        navigator('Inicio');
+        navigator('Inicio/Home');
     }
     setUserInfo({ user: '', pass: '' }); // Limpiar campos después de enviar
   };
   return (
+    <>
+
     <section className='loginBody'>
-      <h1 className='title'>Rent a <s>Car</s> House</h1>
+      <h1 className='title'>RentHouse</h1>
       <img src={apartment} className='picLogin'></img>
       <div className='login'>
         <h1>Login</h1>
@@ -34,6 +37,7 @@ export const Login= ()=>{
           className='textbox'
           name='user'
           type='text'
+          placeholder='usuario'
         />
         <input
           value={userInfo.pass}
@@ -46,6 +50,7 @@ export const Login= ()=>{
           className='textbox'
           name='pass'
           type='password'
+          placeholder='clave'
         />
         <button
           className='submit'
@@ -63,5 +68,6 @@ export const Login= ()=>{
         <p className={errCred}>Credenciales Incorrecta/s</p>
       </div>
     </section>
+  </>
   );
 }

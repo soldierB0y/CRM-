@@ -26,12 +26,7 @@ export const UserModel= DB.define('user',
     timestamps:true
 })
 
-try {
-    await DB.sync()
-    console.log('Tabla de usuarios creada con exito')
-} catch (error) {
-    console.log(error)
-}
+
 
 
 export const apartmentModel= DB.define('Apartament',
@@ -50,9 +45,12 @@ export const apartmentModel= DB.define('Apartament',
             type:DataTypes.DOUBLE,
             allowNull:false
         },
-        tenant:
-        {
+        tenantName:{
             type:DataTypes.STRING,
+            allowNull:true
+        },
+        tenantID:{
+            type:DataTypes.INTEGER,
             allowNull:true
         },
         inversion:
@@ -68,15 +66,62 @@ export const apartmentModel= DB.define('Apartament',
         location:
         {
             type:DataTypes.STRING,
-            allowNull:false
+            allowNull:true
         },
         locationUrl:
         {
             type:DataTypes.STRING,
-            allowNull:false
+            allowNull:true
         },
+        description:
+        {
+            type:DataTypes.STRING,
+            allowNull:true
+        }
 
     },{
         timestamps:true
     }
 )
+
+export const tenantModel= DB.define('tenant',{
+    IDTenant:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        primaryKey:true,
+        autoIncrement:true
+    },
+    fullName:{
+        type:DataTypes.STRING,
+        allowNull:false
+    },
+    number:
+    {
+        type:DataTypes.STRING,
+        allowNull:true
+    },
+    birthDate:
+    {
+        type:DataTypes.DATE,
+        allowNull:true
+    },
+    maritalStatus:{
+        type:DataTypes.STRING,
+        allowNull:true
+    },
+    email:
+    {
+        type:DataTypes.STRING,
+        allowNull:true
+    }
+},{
+    timestamps:true
+})
+
+
+try {
+    await DB.sync()
+    console.log('Tabla de usuarios creada con exito')
+} catch (error) {
+    console.log(error)
+}

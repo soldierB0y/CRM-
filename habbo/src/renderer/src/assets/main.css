@@ -9,6 +9,7 @@
     font-weight: 400;
     font-style: normal;
     user-select: none;
+    scrollbar-color:#505050 #3c3c3c;
 }
 
 .login
@@ -23,7 +24,7 @@
     align-items: center;
     padding: 50px;
     border-radius: 24px;
-    gap:10px;
+    gap:15px;
     border:1px solid #e6e6e6;
     position: relative;
     z-index: 2;
@@ -42,20 +43,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 20px;
 }
 .loginBody
 {
     width: 100vw;
-    height: 100vh;
+    height: 94vh;
     background-color: #121212;
     display: flex;
     align-items: center;
+    border:1px solid #b3b3b3;
     justify-content: center;
 }
 .login input
 {
-    width: 100%;
-    height: 45px;
+    width: 80%;
+    height: 35px;
     font-size: 22px;
     border-radius: 7px;
 
@@ -63,8 +66,8 @@
 
 .submit
 {
-    width: 100%;
-    height: 45px;
+    width: 80%;
+    height: 35px;
     font-size: 22px;
     border-radius: 7px;
     background-color: #dfdfdf;
@@ -113,6 +116,7 @@
 .visible
 {
     display: block;
+    text-align: center;
 }
 .invisible
 {
@@ -127,27 +131,29 @@
 .principal
 {
     width: 100vw;
-    height: 100vh;
+    height: 94vh;
     display: flex;
     flex-direction: row;
+    border: 1px solid #b3b3b3;
 }
 
 .menu
 {
     background-color: #2e2e2e;
-    width:15%;
-    overflow: hidden;
+    width:70px;
     max-width: 60px;
     transition: .2s ease-in-out;
     padding-top: 1%;
+    overflow-x: hidden;
+
+
 }
 
 .menu:hover
 {
-    max-width: 15%;
+    max-width: 220px;
+    width: 550px;
 }
-
-
 
 .menu ul
 {
@@ -156,7 +162,7 @@
 
 .menu ul span
 {
-    width: 100%;
+    width:220px;
     height: 60px;
     display: flex;
     align-items: center;
@@ -165,14 +171,22 @@
     transition: .2s ease-in-out;
     display: flex;
     flex-direction: row;
-    gap:20%
+    gap:20%;
+    border-radius: 7px;
 }
+
 
 .menu ul span:hover
 {
     cursor: pointer;
     background-color: white;
     color:#121212;
+
+}
+
+.menu ul span:hover img
+{
+    filter:invert(0)
 }
 
 .menu ul span img
@@ -193,7 +207,7 @@
     color:#e6e6e6;
     width: 100%;
     display: flex;
-    background: linear-gradient(360deg, rgba(46, 46, 46, 1) 0%, rgb(20, 20, 20) 50%);
+    background: linear-gradient(360deg, rgba(46, 46, 46, 1) 0%, rgb(34, 34, 34) 50%);
     padding-left: 20%;
     max-height: 140px;
     height: 15%;
@@ -219,36 +233,56 @@
 
 .containerCover
 {
-
     display: flex;
     flex-direction: row;
     gap:10px;
-    padding: 1%;
+    padding-top: 1%;
+    border-radius: 20px;
+    color:#e6e6e6;
 }
 
-.containerCover div
+.apartContainer
 {
-    width: 50%;
-    height: 80vh;
+
+    height: 75vh;
+    background: #2e2e2e;
+    border-radius: 20px;
+    padding: 20px;
+    flex:1;
+    padding-top: 50px !important;
+    transition: .2s ease-in-out;
 }
 
 .crud
 {
-        background: linear-gradient(360deg, rgba(46, 46, 46, 1) 0%, rgb(20, 20, 20) 50%);
+
         display: flex;
-        align-items: center;
+        justify-content:flex-start !important;
         flex-direction: column;
-        border-radius: 20px;
+
         padding: 10px;
         justify-content: center;
 }
 
 .crud h2
 {
-    color:#e6e6e6;
+
     width: 100%;
     text-align: center;
     
+}
+
+.crudForm textarea
+{
+    width: 83%;
+    height: fit-content;
+    min-height: 80px;
+    background-color: #e6e6e6;
+    outline-color: #dfdfdf;
+    font-size: 18px;
+    border-style: none;
+    border-radius: 5px;
+    padding-left: 10px;
 }
 
 .crudForm
@@ -260,9 +294,13 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap:2%;
+    gap:10px;
     align-items: center;
     justify-self: center;
+    border:1px solid white;
+    margin:15px 0;
+    padding: 50px 0;
+    border-radius: 40px;
 }
 
 .crudForm input, .crudForm select
@@ -280,22 +318,26 @@
 
 .buttonContainer
 {
-    width: 100% !important;
     height: fit-content !important;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    gap:25px;
+    padding: 4% 15%;
     align-items: center;
     justify-content: center;
-    gap:25px;
-    padding: 50px;
-    max-width: 600px;
+    border:1px solid white;
+    border-radius: 40px;
+    margin-bottom: 20px;
+
 }
 
 .buttonContainer input
 {
     width: 225px;
     height: 35px;
+    border: none;
+    border-radius: 8px;
     
 }
 
@@ -303,4 +345,255 @@
 {
     background-color: white;
     cursor: pointer;
+}
+
+
+.tableInfo
+{
+    border-radius: 10px;
+    border:1px solid white
+}
+
+.tableInfo tr
+{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.searchContainer
+{
+
+    width: 100% !important;
+    height: 85% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    overflow: auto !important;
+    
+
+}
+
+.searchContainer table tr
+{
+    border-bottom: 1px solid white;
+    padding:5px 0px;
+    display: flex;
+    gap:5px;
+}
+
+.searchContainer table tr:hover
+{
+    background-color:#e6e6e6;
+    color: #121212;
+    cursor: pointer;
+    transition: .1s ease-in-out;
+    border-radius: 5px;
+
+}
+
+.searchContainer table td
+{
+    width: 6vw;
+    display: flex;
+    align-items: center;
+    word-break: break-word; /* fuerza el salto dentro de palabras largas */
+    white-space: normal;    /* permite múltiples líneas */
+    overflow-wrap: anywhere; /* ayuda adicional para saltos de línea */
+    font-size: 16px;
+    justify-content: center;
+
+}
+
+.searcher
+{
+    width: 350px;
+    height: 45px !important;
+    font-size: 19px;
+    margin: 10px 0px;
+    border-radius: 8px;
+    border: none;
+    padding-left: 10px;
+}
+
+.searchButtons
+{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: row;
+}
+
+.searchButtons select,.searcher
+{
+    outline: none;
+}
+
+.searcher:hover
+{
+    cursor:text;
+}
+.searchButtons select:hover
+{
+    cursor: pointer;
+}
+
+
+.searchButtons select
+{
+    padding-left: 10px;
+    font-size: 18px;
+    height: 45px;
+    width: 250px;
+    border-radius: 8px;
+}
+
+
+.topBar
+{
+    background-color: #131313;
+    width: 100vw;
+    height: 6vh;
+    position: relative;
+    z-index: 10000;
+    color:white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding:0px 25px;
+    font-size: 19px;
+    border: 1px #b3b3b3 solid;
+    justify-content: space-between;
+    padding-right: 0;
+    border-bottom: none;
+   /* -webkit-app-region:drag;*/
+
+}
+
+.dragMe
+{
+    flex:1;
+    -webkit-app-region:drag;
+}
+
+
+.topBar span
+{
+    display: flex;
+    flex-direction: row;
+    gap:4px;
+    height: 100%;
+    align-items: center;
+}
+
+.topBar span img
+{
+    width: 100%;
+    filter:invert(1)
+}
+
+.topBar span img:hover
+{
+    cursor: pointer;
+    filter: invert(0);
+
+}
+
+.topBar span i
+{
+
+    height: 100%;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6%;
+    transition: .2s ease-in-out;
+
+}
+.topBar span i:hover
+{
+    background-color: white;
+    cursor: pointer;
+}
+
+
+.colAdapt
+{
+    overflow-y: hidden;
+}
+
+.closeView:hover
+{
+    background-color: rgb(255, 49, 49) !important;
+}
+
+.closeView img:hover
+{
+    filter:invert(1) !important
+}
+
+.mainRow
+{
+    height:50px;
+}
+
+
+@media(max-width:1640px)
+{
+  .containerCover
+  {
+    flex-direction: column;
+  }
+  .apartContainer
+  {
+    min-height: 40vh;
+  }
+  .containerCover
+  {
+    padding: 0;
+    padding-top: 10px;
+  }
+
+  .colAdapt
+  {
+    overflow-y:auto;
+  }
+
+.searchContainer table td
+{
+    width: auto;
+    flex:1
+}
+
+}
+
+@media(max-height:885px)
+{
+  .containerCover
+  {
+    flex-direction: column;
+  }
+  .apartContainer
+  {
+    min-height: 40vh;
+  }
+  .containerCover
+  {
+    padding: 0;
+    padding-top: 10px;
+  }
+
+  .colAdapt
+  {
+    overflow-y:auto;
+  }
+
+.searchContainer table td
+{
+    width: auto;
+    flex:1
+}
+  
 }

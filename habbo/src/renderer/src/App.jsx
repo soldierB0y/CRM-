@@ -5,10 +5,12 @@ import {Pagos} from './components/pagos'
 import { Inicio } from "./components/inicio";
 import { Login } from "./components/login"
 import {BrowserRouter as Router,Routes,Route} from 'react-router-dom';
+import { TopBar } from "./components/topBar";
 
 function App() {
  return(
   <>
+  <TopBar></TopBar>
     <Router>
       <Routes>
         <Route path="/" element={<Login/>}/>

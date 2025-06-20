@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export const Inicio= ()=> {
     const navigator= useNavigate()
     return(
-        <div className="principal dark">
+        <div className="principal dark colAdapt">
             <nav className="menu">
                 <ul>
                     <span

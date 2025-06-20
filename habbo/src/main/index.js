@@ -1,10 +1,14 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import path from 'path'
+
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DB } from '../backend/db.js'
-import { checkLogin, createApartment } from '../backend/controller.js'
+import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant} from '../backend/controller.js'
+
+
+var mainWindow;
+
 try {
   (
     async()=>{
@@ -22,19 +26,22 @@ try {
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+   mainWindow = new BrowserWindow({
+    width: 1080,
+    height: 750,
+    minWidth:1080,
+    minHeight:750,
     show: false,
     fullscreen:false,
     autoHideMenuBar: true,
+    frame:false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false
     }
   })
-  console.log('foker')
+
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -68,7 +75,9 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
+  // HANDLES
+
+//Login
   ipcMain.handle('sendLogin',async(e,data)=>{
           const check= await checkLogin(data)
 
@@ -85,20 +94,121 @@ app.whenReady().then(() => {
 
     })
 
+  //Apartment
+  ipcMain.handle('getApartments',async(e)=>{
+      const check= await getApartments();
+      console.log(check);
+      if(check.result <=0)
+      {
+        console.log('get Apartments failed');
+        return {result:false,error:check.error}
+      }
+      else
+      {
+        console.log('get Apartments success')
+        return {result:true,object:check.object}
+      }
+  })
+
+
     ipcMain.handle('createApartment',async (e,data)=>{
-      const createApartment= await createApartment(data);
+      const check= await createApartment(data);
+      console.log('main result',check.result)
       if(check.result==1) 
       {
-        console.log('Login successful:', data);
+        console.log('created successfully:', data);
         return true;
       }
       else if (check.result==0)
       {
-        console.log('Login failed:', data);
+        console.log('created failed:', data);
         return false;
       }
     })
 
+    ipcMain.handle('deleteApartment',async (e,IDApartment)=>{
+        const check= await deleteApartment(IDApartment);
+        if(check==true)
+        {
+          return true
+        }
+        else
+        {
+          return false
+        }
+    })
+
+    
+    //Tenant
+      ipcMain.handle('getTenants',async(e)=>{
+      const check= await getTenants();
+      console.log(check);
+      if(check.result <=0)
+      {
+        console.log('get tenants failed');
+        return {result:false,error:check.error}
+      }
+      else
+      {
+        console.log('get tenants success')
+        return {result:true,object:check.object}
+      }
+  })
+
+    ipcMain.handle('createTenant',async(e,data)=>{
+      const check= await createTenant(data);
+      if(check.result==1)
+      {
+        console.log('created successfully:', data);
+        return true;
+      }
+      else
+      {
+        console.log('created failed:', data);
+        return false;
+      }
+    })
+    ipcMain.handle('deleteTenant',async(e,ID)=>{
+      const check= await deleteTenant(ID);
+      if (check==true)
+        return true
+      else
+        return false
+    })
+    ipcMain.handle('getTenant',async(e,ID)=>{
+      const check= await getTenant();
+      return check;
+    })
+
+    ipcMain.handle('updateTenant',async(e,data)=>{
+      const check=await updateTenant(data);
+      return check;
+    })
+
+
+
+    //screen
+    ipcMain.handle('closeWindow',(e)=>{
+      mainWindow.close();
+    })
+    
+    ipcMain.handle('minimizeWindow',(e)=>{
+      mainWindow.minimize();
+    }
+    )
+    ipcMain.handle('changeSizeWindow',()=>{
+      if(mainWindow.isMaximized())
+      {
+        console.log('max')
+        mainWindow.unmaximize()
+      }
+      else
+      {
+        console.log('min')
+        mainWindow.maximize()
+      }
+    })
+    
   createWindow()
 
   app.on('activate', function () {
