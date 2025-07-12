@@ -45,6 +45,9 @@ const api = {
   },
   findTenant:(name)=>{
     return ipcRenderer.invoke('findTenant',name)
+  },
+  createBills:()=>{
+    return ipcRenderer.invoke('createBills')
   }
 }
 

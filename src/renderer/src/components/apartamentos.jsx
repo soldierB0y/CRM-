@@ -6,7 +6,7 @@ export const Apartamentos=()=>{
     //captura el dia especifico
     const day= today.getDate();
     //variables
-    const [apartament, setApartament]= useState({name:"",rent:'',location:"",locationUrl:"",tenantName:"",inversion:'',description:"",tenantID:'',paymentDay:day})
+    const [apartament, setApartament]= useState({name:"",rent:'',location:"",locationUrl:"",tenantName:"",inversion:'',description:"",tenantID:'',paymentDay:day,rentalDate:''})
     const [tenants,setTenants]= useState([]); 
     const [errEnv,setErrEnv]= useState('invisible');
     const [modEx,setModEx]= useState('invisible');
@@ -21,7 +21,7 @@ export const Apartamentos=()=>{
     //funciones
     const limpiar= ()=>{
         setSelectedID(-1)
-        setApartament({...apartament,name:'',rent:'',tenantName:"",location:'',locationUrl:'',inversion:'',description:"",paymentDay:day,tenantID:''})
+        setApartament({...apartament,name:'',rent:'',tenantName:"",location:'',locationUrl:'',inversion:'',description:"",paymentDay:day,tenantID:'',rentalDate:''})
     }
 
     const quitNot=()=>{
@@ -169,6 +169,7 @@ export const Apartamentos=()=>{
                                 <td>Ubicacion</td>
                                 <td>UbiURL</td>
                                 <td>Fecha de Pago</td>
+                                <td>Dia de renta</td>
                                 <td>Creacion</td>
                                 <td>Modificacion</td>
                             </tr>
@@ -181,7 +182,7 @@ export const Apartamentos=()=>{
                                     <tr 
                                     onClick={()=>{
                                         console.log(item)
-                                        setApartament({...apartament,name:item.name,rent:item.rent,tenantName:item.tenantName,inversion:parseFloat(item.inversion),description:item.description,location:item.location,locationUrl:item.locationUrl,paymentDay:item.paymentDay});
+                                        setApartament({...apartament,name:item.name,rent:item.rent,tenantName:item.tenantName,inversion:parseFloat(item.inversion),description:item.description,location:item.location,locationUrl:item.locationUrl,paymentDay:item.paymentDay,rentalDate:item.rentalDate});
                                         setSelectedID(item.IDApartment)
                                     }}
                                     key={index}>
@@ -195,6 +196,7 @@ export const Apartamentos=()=>{
                                             <td>{item.location}</td>
                                             <td>{item.locationUrl}</td>
                                             <td>{item.paymentDay?item.paymentDay:""}</td>
+                                            <td>{item.rentalDate?item.rentalDate.toString():""}</td>
                                             <td>{item.createdAt.toString()}</td>
                                             <td>{item.updatedAt.toString()}</td>
 
@@ -228,6 +230,10 @@ export const Apartamentos=()=>{
                     {/*Inquilino*/}
                         <select 
                             onChange={(e)=>{
+
+
+                               
+                                
                                 const tenantChoosed= tenants.filter(t=>{
                                     if(t.fullName==e.target.value)
                                         return t.IDTenant
@@ -268,10 +274,17 @@ export const Apartamentos=()=>{
                             }}
                             value={apartament.inversion}
                         />
-                    
+                    {/*Rental Date */}
+                    <input id='rentalDate' type='date' placeholder="fecha de renta"
+                        onChange={(e)=>{
+                            // Guardar la fecha en formato yyyy-MM-dd
+                            setApartament({...apartament, rentalDate: e.target.value})
+                        }}
+                        value={typeof apartament.rentalDate === 'string' ? apartament.rentalDate : ''}
+                    />
                     {/*PaymentDate */}
-                        <label>Dia de Pago:</label>
-                        <input type='number' min="1" max="31"
+                        <span className="paymentContainer">
+                        <input id='paymentDay' type='number' min="1" max="31"
                             onChange={(e)=>{
 
                                 var result= e.target.value;
@@ -289,6 +302,7 @@ export const Apartamentos=()=>{
                             value={apartament.paymentDay}
                             placeholder="Dia de Pago"
                         ></input>
+                        </span>
                     {/*Descripcion */}
                         <textarea placeholder="descripcion"
                             onChange={(e)=>{

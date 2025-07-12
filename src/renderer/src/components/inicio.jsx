@@ -5,13 +5,10 @@ import Home from '../assets/imagenes/iconos/home.png';
 import Report from '../assets/imagenes/iconos/reports.png'
 import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 
 export const Inicio= ()=> {
-
-
-
 
     const navigator= useNavigate()
     return(

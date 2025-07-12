@@ -81,6 +81,10 @@ export const apartmentModel= DB.define('Apartament',
         paymentDay:{
             type:DataTypes.INTEGER,
             allowNull:true
+        },
+        rentalDate:{
+            type:DataTypes.DATE,
+            allowNull:true
         }
     },{
         timestamps:true
@@ -137,6 +141,11 @@ export const monthlyBillsModel= DB.define('monthlyBills',{
     },
     debt:{
         type:DataTypes.DOUBLE,
+        allowNull:false
+    },
+    day:
+    {
+        type:DataTypes.INTEGER,
         allowNull:false
     }
 

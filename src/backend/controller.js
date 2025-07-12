@@ -1,5 +1,5 @@
-import {apartmentModel, tenantModel, UserModel } from "./model"
-
+import { Op, where } from "sequelize";
+import {apartmentModel, monthlyBillsModel, tenantModel, UserModel } from "./model"
 
 export const checkLogin=async (userInfo)=>{
     try {
@@ -37,7 +37,8 @@ export const createApartment=async(apartment)=>{
             inversion:apartment.inversion,
             description:apartment.description,
             tenantID:apartment.tenantID,
-            paymentDay:apartment.paymentDay
+            paymentDay:apartment.paymentDay,
+            rentalDate:apartment.rentalDate
         })
             console.log('controller',result);
         if(result!= null )
@@ -206,3 +207,93 @@ try {
     
 }
 
+//bills
+export const getBills= async()=>{
+    try {
+        const res= await monthlyBillsModel.findAll()
+        const arrBills=[];
+        res.map(b=>{
+            arrBills.push(b.dataValues)
+        })
+        const bills= arrBills
+        console.log(bills)
+        return {result:true,object:bills} 
+    } catch (error) {
+        return {result:false,object:{},error:error}
+    }
+}
+
+//bills
+export const createBills=async ()=>{
+    const res= await getApartments(); //funcion para tomar los apartamentos
+    const resBills= await getBills();// funcion para tomar las facturas
+    const date= new Date()//objeto fecha
+    const currentDay = date.getDate();// toma el dia actual
+    
+
+    if (res.result==1 && res.object.length  > 0)// asegura de tener los apartamentos
+    {
+        const arrApartments = res.object; // los toma en el array
+        const apartments = [];
+        arrApartments.map(apartment => {
+            apartments.push(apartment.dataValues)// los separa y toma solo los dataValues
+        })
+        // Toma la fecha de hoy
+        const today = new Date();
+        // Get all bills
+        const billsRes = await getBills();
+        const bills = billsRes.result ? billsRes.object : []; //captura las facturas
+        // Recorre todos los apartamentos y espera a que terminen las operaciones asíncronas
+        let billsCreated = 0;
+        let billsSkipped = 0;
+        for (const a of apartments) {
+            if (a.paymentDay <= currentDay) {
+                // Verifica que haya pasado al menos un mes desde la creación del apartamento
+                let canCreateBill = true;
+                if (a.rentalDate) {
+                    const creationDate = new Date(a.rentalDate);
+                    const creationYear = creationDate.getFullYear();
+                    const creationMonth = creationDate.getMonth(); // 0-indexed
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth(); // 0-indexed
+                    // Solo permite crear factura si el mes actual es al menos un mes después de la creación
+                    if ((currentYear === creationYear && currentMonth <= creationMonth)) {
+                        canCreateBill = false;
+                    }
+                }
+                if (!canCreateBill) {
+                    billsSkipped++;
+                    console.log(`El apartamento ${a.IDApartment} fue creado este mes, no se genera factura.`);
+                    continue;
+                }
+                // Buscar si ya existe una factura para este mes y apartamento
+                const billThisMonth = bills.find(b => {
+                    if (b.IDApartment !== a.IDApartment || !b.createdAt) return false;
+                    const billDate = new Date(b.createdAt);
+                    return billDate.getFullYear() === today.getFullYear() && (billDate.getMonth() + 1) === (today.getMonth() + 1);
+                });
+                if (billThisMonth) {
+                    billsSkipped++;
+                    console.log(`Ya existe factura para el apartamento ${a.IDApartment} en este mes:`, billThisMonth);
+                } else {
+                    try {
+                        const objBill = { IDApartment: a.IDApartment, debt: a.rent, day: a.paymentDay };
+                        const res = await monthlyBillsModel.create(objBill);
+                        billsCreated++;
+                        console.log('Factura creada exitosamente', res);
+                    } catch (error) {
+                        console.log('Error al crear factura', error);
+                    }
+                }
+            }
+        }
+        return {
+            result: true,
+            message: `Facturas creadas: ${billsCreated}, ya existentes este mes: ${billsSkipped}`
+        };
+    }
+    else
+    {
+        return {result:false,error:'No existen apartamentos o hubo un error a la hora de cargarlos'}
+    }
+}

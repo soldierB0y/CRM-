@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DB } from '../backend/db.js'
-import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant} from '../backend/controller.js'
+import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant, createBills} from '../backend/controller.js'
 
 
 var mainWindow;
@@ -198,6 +198,11 @@ app.whenReady().then(() => {
       return check;
     })
 
+    //monthly Bills
+    ipcMain.handle('createBills',async (e)=>{
+        const res=await  createBills();
+        return res;
+    })
 
 
     //screen
