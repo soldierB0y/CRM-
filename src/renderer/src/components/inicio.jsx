@@ -4,6 +4,7 @@ import Pagos from '../assets/imagenes/iconos/pay.png';
 import Home from '../assets/imagenes/iconos/home.png';
 import Report from '../assets/imagenes/iconos/reports.png'
 import { Outlet } from 'react-router-dom';
+import bills from '../assets/imagenes/iconos/bills.png';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -43,6 +44,14 @@ export const Inicio= ()=> {
                     </span>
                     <span
                         onClick={()=>{
+                            navigator('/Inicio/Facturas')
+                        }}
+                    >
+                        <img src={bills}></img>
+                        <li>Facturas</li>
+                    </span>
+                    <span
+                        onClick={()=>{
                             navigator('/Inicio/Pagos')
                         }}
                     >
@@ -50,7 +59,11 @@ export const Inicio= ()=> {
                         <li>Pagos</li>
                     </span>
 
-                    <span>
+                    <span
+                        onClick={()=>{
+                            navigator('/Inicio/Reportes')
+                        }}
+                    >
                         <img src={Report}></img>
                         <li>Reportes</li>
                     </span>

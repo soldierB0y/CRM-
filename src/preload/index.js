@@ -1,6 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcMain, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { getApartaments, getTenants } from '../backend/controller';
 
 // Custom APIs for renderer
 const api = {
@@ -48,6 +47,9 @@ const api = {
   },
   createBills:()=>{
     return ipcRenderer.invoke('createBills')
+  },
+  getBills:()=>{
+    return ipcRenderer.invoke('getBills')
   }
 }
 
