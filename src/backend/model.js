@@ -147,6 +147,11 @@ export const monthlyBillsModel= DB.define('monthlyBills',{
     {
         type:DataTypes.INTEGER,
         allowNull:false
+    },
+    state:
+    {
+        type:DataTypes.INTEGER,
+        allowNull:false
     }
 
 },{timestamps:true})
@@ -158,12 +163,16 @@ export const paymentsModel= DB.define('payments',{
         autoIncrement:true,
         primaryKey:true
     },
-    IDTenant:{
+    IDMonthlyBill:{
         type:DataTypes.INTEGER,
         allowNull:false
     },
     amount:{
         type:DataTypes.DOUBLE,
+        allowNull:false
+    },
+    payerName:{
+        type:DataTypes.STRING,
         allowNull:false
     }
 

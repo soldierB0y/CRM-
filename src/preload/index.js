@@ -1,5 +1,6 @@
 import { contextBridge, ipcMain, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { getPayments, updateBillState } from '../backend/controller';
 
 // Custom APIs for renderer
 const api = {
@@ -50,15 +51,23 @@ const api = {
   },
   getBills:()=>{
     return ipcRenderer.invoke('getBills')
+  },
+  deleteMonthlyBill:(IDMonthlyBill)=>{
+    return ipcRenderer.invoke('deleteMonthlyBills',IDMonthlyBill)
+  },
+  payBill:(IDFactura,dineroPagado,payerName)=>{
+    const data= {IDFactura:IDFactura,dineroPagado:dineroPagado,payerName}
+    return ipcRenderer.invoke('payBill',data)
+  },
+  getPayments:()=>{
+    return ipcRenderer.invoke('getPayments');
+  },
+  updateBillState:()=>{
+    return ipcRenderer.invoke('updateBillState');
   }
 }
 
 
-
-
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)

@@ -12,13 +12,16 @@ import { useEffect, useState } from 'react';
 export const Inicio= ()=> {
 
     const navigator= useNavigate()
+    const [selected,setSelected]= useState();
     return(
         <div className="principal dark colAdapt">
             <nav className="menu">
                 <ul>
                     <span
+                     className={selected=='home'?"menuOptionSelected":""}
                      onClick={()=>{
                                 navigator('/Inicio/Home')
+                                setSelected('home')
                             }}
                     >
                         <img src={Home}
@@ -26,8 +29,10 @@ export const Inicio= ()=> {
                         <li>Home</li>
                     </span>
                     <span
+                     className={selected=='inquilinos'?"menuOptionSelected":""}
                         onClick={()=>{
                                 navigator('/Inicio/Inquilinos')
+                                setSelected('inquilinos')
                             
                         }}
                     >
@@ -35,24 +40,30 @@ export const Inicio= ()=> {
                         <li>Inquilinos</li>
                     </span>
                     <span
+                     className={selected=='apartamentos'?"menuOptionSelected":""}
                         onClick={()=>{
                             navigator('/Inicio/Apartamentos')
+                            setSelected('apartamentos')
                         }}
                     >
                         <img src={apartament}></img>
                         <li>Apartamentos</li>
                     </span>
                     <span
+                     className={selected=='facturas'?"menuOptionSelected":""}
                         onClick={()=>{
                             navigator('/Inicio/Facturas')
+                            setSelected('facturas')
                         }}
                     >
                         <img src={bills}></img>
                         <li>Facturas</li>
                     </span>
                     <span
+                     className={selected=='pagos'?"menuOptionSelected":""}
                         onClick={()=>{
                             navigator('/Inicio/Pagos')
+                            setSelected('pagos')
                         }}
                     >
                         <img src={Pagos}></img>
@@ -60,8 +71,10 @@ export const Inicio= ()=> {
                     </span>
 
                     <span
+                     className={selected=='reportes'?"menuOptionSelected":""}
                         onClick={()=>{
                             navigator('/Inicio/Reportes')
+                            setSelected('reportes')
                         }}
                     >
                         <img src={Report}></img>

@@ -180,9 +180,22 @@ export const Apartamentos=()=>{
                             searchResult.map((item,index)=>(
                                 <>
                                     <tr 
+                                    className={selectedID==item.IDApartment?"rowSelected":""}
                                     onClick={()=>{
-                                        console.log(item)
-                                        setApartament({...apartament,name:item.name,rent:item.rent,tenantName:item.tenantName,inversion:parseFloat(item.inversion),description:item.description,location:item.location,locationUrl:item.locationUrl,paymentDay:item.paymentDay,rentalDate:item.rentalDate});
+                                        const date= item.rentalDate? new Date(item.rentalDate):null;
+                                        let dateFormated= null;
+                                        if(date)
+                                        {
+                                            let DD= date.getDate();
+                                            DD=DD.toString().length==1?DD="0"+DD:DD;
+                                            let MM= date.getMonth();
+                                            MM=MM.toString().length==1?MM="0"+MM:MM
+                                            let YYYY= date.getFullYear();
+                                             dateFormated= YYYY+"-"+MM+"-"+DD;
+                                             console.log("DD:"+DD+" MM:"+MM+" YYYY:"+YYYY)
+                                             console.log(dateFormated)
+                                        }
+                                        setApartament({...apartament,name:item.name,rent:item.rent,tenantName:item.tenantName,inversion:parseFloat(item.inversion),description:item.description,location:item.location,locationUrl:item.locationUrl,paymentDay:item.paymentDay,rentalDate:dateFormated!=null?dateFormated:""});
                                         setSelectedID(item.IDApartment)
                                     }}
                                     key={index}>
@@ -280,7 +293,7 @@ export const Apartamentos=()=>{
                             // Guardar la fecha en formato yyyy-MM-dd
                             setApartament({...apartament, rentalDate: e.target.value})
                         }}
-                        value={typeof apartament.rentalDate === 'string' ? apartament.rentalDate : ''}
+                        value={apartament.rentalDate}
                     />
                     {/*PaymentDate */}
                         <span className="paymentContainer">

@@ -164,6 +164,7 @@ export const Inquilinos=()=>{
                                 searchResult.map((item,index)=>(
                                     <>
                                         <tr
+                                            className={selectedID==item.IDTenant?"rowSelected":""}
                                             onClick={()=>{
                                                 quitNot()
                                                 console.log(selectedID)

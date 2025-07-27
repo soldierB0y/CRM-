@@ -1,5 +1,4 @@
-import { Op, where } from "sequelize";
-import {apartmentModel, monthlyBillsModel, tenantModel, UserModel } from "./model"
+import {apartmentModel, monthlyBillsModel, paymentsModel, tenantModel, UserModel } from "./model"
 
 export const checkLogin=async (userInfo)=>{
     try {
@@ -38,7 +37,7 @@ export const createApartment=async(apartment)=>{
             description:apartment.description,
             tenantID:apartment.tenantID,
             paymentDay:apartment.paymentDay,
-            rentalDate:apartment.rentalDate
+            rentalDate:apartment.rentalDate,
         })
             console.log('controller',result);
         if(result!= null )
@@ -222,7 +221,23 @@ export const getBills= async()=>{
         return {result:false,object:{},error:error}
     }
 }
+export const deleteMonthlyBill= async(IDMonthlyBill)=>{
+    try {
+        const res= await monthlyBillsModel.destroy({where:{IDMonthlyBill:IDMonthlyBill}});
+        if (res > 0)
+        {
+            return true
+        }
+        else return false
+    } catch (error) {
 
+        console.log(error)
+        return false
+        
+    }
+
+
+}
 //bills
 export const createBills=async ()=>{
     const res= await getApartments(); //funcion para tomar los apartamentos
@@ -257,18 +272,19 @@ export const createBills=async ()=>{
                     const currentYear = today.getFullYear();
                     const currentMonth = today.getMonth(); // 0-indexed
                     // Solo permite crear factura si el mes actual es al menos un mes después de la creación
-                    if ((currentYear === creationYear && currentMonth <= creationMonth)) {
+                    if ((currentYear === creationYear && currentMonth !== creationMonth)) {
                         canCreateBill = false;
                     }
                 }
                 if (!canCreateBill) {
                     billsSkipped++;
+                    console.log('skip')
                     console.log(`El apartamento ${a.IDApartment} fue creado este mes, no se genera factura.`);
                     continue;
                 }
                 // Buscar si ya existe una factura para este mes y apartamento
                 const billThisMonth = bills.find(b => {
-                    if (b.IDApartment !== a.IDApartment || !b.createdAt) return false;
+                    if (b.IDApartment !== a.IDApartment) return false;
                     const billDate = new Date(b.createdAt);
                     return billDate.getFullYear() === today.getFullYear() && (billDate.getMonth() + 1) === (today.getMonth() + 1);
                 });
@@ -277,7 +293,7 @@ export const createBills=async ()=>{
                     console.log(`Ya existe factura para el apartamento ${a.IDApartment} en este mes:`, billThisMonth);
                 } else {
                     try {
-                        const objBill = { IDApartment: a.IDApartment, debt: a.rent, day: a.paymentDay };
+                        const objBill = { IDApartment: a.IDApartment, debt: a.rent, day: a.paymentDay,state:-1};
                         const res = await monthlyBillsModel.create(objBill);
                         billsCreated++;
                         console.log('Factura creada exitosamente', res);
@@ -295,5 +311,102 @@ export const createBills=async ()=>{
     else
     {
         return {result:false,error:'No existen apartamentos o hubo un error a la hora de cargarlos'}
+    }
+}
+
+
+export const payBill= async (data)=>{
+    const {IDFactura,dineroPagado,payerName}= data
+    const d= {IDMonthlyBill:IDFactura,amount:dineroPagado,payerName:payerName}
+    try {
+        const res= await paymentsModel.create(d)
+        
+        console.log(res)
+        return {result: true,message:"Registrado exitosamente"};
+    } catch (error) {
+        return {result: false, message:error}
+    }
+}
+
+export const getPayments= async()=>{
+    try {
+        const res= await paymentsModel.findAll();
+        const payments=[];
+        console.log(res)
+        for (let pay of  res)
+        {
+            payments.push(pay.dataValues)   
+        }
+        return {result:true,object:payments,message:"Extraido con exito"}
+    } catch (error) {
+        return {result:false,object:null,message:error}
+    }
+}
+
+export const updateBillState=async ()=>{
+    try {
+        let res= await getPayments();
+        const payments=res.result==true?res.object:[];
+        res= await getBills();
+        const bills=res.result==true?res.object:[];
+        const IDBillsPayed= [];
+        for(const b of bills)
+        {
+            const id= b.IDMonthlyBill
+            const amount= b.debt;
+            for( const p of payments)
+            {
+                if(p.IDMonthlyBill==id && p.amount==amount)
+                {
+                    IDBillsPayed.push(b.IDMonthlyBill);
+                }
+                    
+            }
+        }
+        //console.log("PAYED BILLS:",IDBillsPayed)
+        if (IDBillsPayed.length > 0)
+        {
+            const state= 1;
+            const unicPayedBills=[]; 
+            IDBillsPayed.map(bp=>{
+                const ID= bp;
+                let isRepited=false;
+                for(const b of unicPayedBills)
+                {
+                    if(b!= undefined && b != null)
+                    {
+                        if(b==ID)
+                        {
+                            isRepited=true; 
+                            break;
+                        }
+                    }
+                }
+                if(isRepited==false)
+                {
+                    unicPayedBills.push(ID);
+                }
+            })
+            console.log("UNIC PAYED BILLS ",unicPayedBills)
+            if(unicPayedBills.length > 0)
+            {
+                unicPayedBills.map(async upb=>{
+                    const res= await monthlyBillsModel.update({ state: 1 }, { where: { IDMonthlyBill: upb } });
+                    return {result:true, object:res,message:"Modificado Exitosamente"}
+                })
+            }
+            else
+            {
+                return {result:false, object:null,message:"No existen facturas pagadas"}
+            }
+        }
+        else
+        {
+            return{result:false,object:[],message:"No hay facturas ni pagadas ni abonadas"}
+        }
+
+    } catch (error) {
+        console.log(error)
+        return {result:false,object:null, message:error}
     }
 }
