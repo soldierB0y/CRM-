@@ -10,6 +10,7 @@
     font-style: normal;
     user-select: none;
     scrollbar-color:#505050 #3c3c3c;
+
 }
 
 .login
@@ -200,6 +201,41 @@
     filter:invert(0) !important
 }
 
+.characterHome
+{
+    width: 8vw;
+    position: absolute;
+    object-fit:contain;
+    top:50vh;
+    animation: breath infinite 20s ease-in-out;
+}
+.characterHome:hover
+{
+    cursor: pointer;
+    top:49vh;
+    filter:invert(0.1)
+}
+
+@keyframes breath {
+    0%{
+        transform:scaleX(1);   
+    }
+    49%
+    {
+        transform:scaleX(1);
+    }
+    50%
+    {
+        transform: scaleX(-1);
+    }
+    99%
+    {
+        transform: scaleX(-1);
+    }
+    
+}
+
+
 .menu ul span img
 {
     width: 40px;
@@ -363,7 +399,8 @@
 .tableInfo
 {
     border-radius: 10px;
-    border:1px solid white
+    border:1px solid white;
+    min-height: 350px;
 }
 
 .tableInfo tr
@@ -720,6 +757,82 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
+}
+
+/* ── CRUD Modal overlay ── */
+.crudOverlay
+{
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crudModalBox
+{
+    background-color: #2e2e2e;
+    border: 1px solid #b3b3b3;
+    border-radius: 24px;
+    padding: 30px 40px;
+    min-width: 520px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    color: #e6e6e6;
+}
+
+.crudModalBox h2
+{
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.crudModalClose
+{
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: none;
+    border: none;
+    color: #e6e6e6;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+
+.crudModalClose:hover
+{
+    background-color: rgb(255,49,49);
+    color: white;
+}
+
+.openCrudBtn
+{
+    height: 45px;
+    padding: 0 20px;
+    font-size: 17px;
+    border: none;
+    border-radius: 8px;
+    background-color: #e6e6e6;
+    color: #121212;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.openCrudBtn:hover
+{
+    background-color: white;
 }
 
 

@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DB } from '../backend/db.js'
-import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant, createBills, getBills, deleteMonthlyBill, payBill, getPayments, updateBillState} from '../backend/controller.js'
+import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant, createBills, getBills, deleteMonthlyBill, payBill, getPayments, updateBillState,deletePayment, getUsers, createUser, deleteUser, updateUserPassword} from '../backend/controller.js'
 
 
 var mainWindow;
@@ -40,24 +40,29 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.mjs'),
       sandbox: false
     }
+
   })
 
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    console.log("----------------------------------------------------------------------------------------");
+    
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
+//  mainWindow.webContents.openDevTools();
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    // En producción, electron-vite pone index.html en out/renderer/index.html dentro del asar
+    const indexPath = join(app.getAppPath(), 'out', 'renderer', 'index.html');
+    mainWindow.loadFile(indexPath);
   }
 }
 
@@ -189,7 +194,7 @@ app.whenReady().then(() => {
         return false
     })
     ipcMain.handle('getTenant',async(e,ID)=>{
-      const check= await getTenant();
+      const check= await getTenant(ID);
       return check;
     })
 
@@ -224,8 +229,32 @@ app.whenReady().then(() => {
       const res= await getPayments();
       return res;
     });
+
+    ipcMain.handle('deletePayment',async (e,IDPayment)=>{
+      const res= await deletePayment(IDPayment)
+      return res;
+    })
+
     ipcMain.handle('updateBillState',async ()=>{
       const res= await updateBillState();
+      return res;
+    })
+
+    // Users
+    ipcMain.handle('getUsers',async()=>{
+      const res= await getUsers();
+      return res;
+    })
+    ipcMain.handle('createUser',async(e,data)=>{
+      const res= await createUser(data);
+      return res;
+    })
+    ipcMain.handle('deleteUser',async(e,IDUser)=>{
+      const res= await deleteUser(IDUser);
+      return res;
+    })
+    ipcMain.handle('updateUserPassword',async(e,IDUser,newPassword)=>{
+      const res= await updateUserPassword(IDUser,newPassword);
       return res;
     })
     //screen
@@ -264,3 +293,6 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+
+

@@ -3,6 +3,8 @@ import Inquilinos from '../assets/imagenes/iconos/tenant.png';
 import Pagos from '../assets/imagenes/iconos/pay.png';
 import Home from '../assets/imagenes/iconos/home.png';
 import Report from '../assets/imagenes/iconos/reports.png'
+import Config from '../assets/imagenes/iconos/settings.png'
+import User from '../assets/imagenes/iconos/user.png';
 import { Outlet } from 'react-router-dom';
 import bills from '../assets/imagenes/iconos/bills.png';
 import { useNavigate } from 'react-router-dom';
@@ -79,6 +81,28 @@ export const Inicio= ()=> {
                     >
                         <img src={Report}></img>
                         <li>Reportes</li>
+                    </span>
+
+                    <span
+                     className={selected=='user'?"menuOptionSelected":""}
+                        onClick={()=>{
+                            navigator('/Inicio/User')
+                            setSelected('user')
+                        }}
+                    >
+                        <img src={User}></img>
+                        <li>usuarios</li>
+                    </span>
+                                        
+                    <span
+                     className={selected=='config'?"menuOptionSelected":""}
+                        onClick={()=>{
+                            navigator('/Inicio/Config')
+                            setSelected('config')
+                        }}
+                    >
+                        <img src={Config}></img>
+                        <li>Configuracion</li>
                     </span>
 
 

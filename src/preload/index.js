@@ -1,6 +1,6 @@
-import { contextBridge, ipcMain, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { getPayments, updateBillState } from '../backend/controller';
+
 
 // Custom APIs for renderer
 const api = {
@@ -62,9 +62,25 @@ const api = {
   getPayments:()=>{
     return ipcRenderer.invoke('getPayments');
   },
+  deletePayment:(IDPayment)=>{
+    return ipcRenderer.invoke('deletePayment',IDPayment)
+  },
   updateBillState:()=>{
     return ipcRenderer.invoke('updateBillState');
-  }
+  },
+  getUsers:()=>{
+    return ipcRenderer.invoke('getUsers');
+  },
+  createUser:(data)=>{
+    return ipcRenderer.invoke('createUser',data);
+  },
+  deleteUser:(IDUser)=>{
+    return ipcRenderer.invoke('deleteUser',IDUser);
+  },
+  updateUserPassword:(IDUser,newPassword)=>{
+    return ipcRenderer.invoke('updateUserPassword',IDUser,newPassword);
+  },
+
 }
 
 

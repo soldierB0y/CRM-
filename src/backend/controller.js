@@ -20,6 +20,50 @@ export const checkLogin=async (userInfo)=>{
 
 }
 
+export const getUsers=async()=>{
+    try {
+        const res= await UserModel.findAll();
+        const users=[];
+        res.map(u=>{ users.push(u.dataValues) });
+        return {result:true, object:users};
+    } catch (error) {
+        console.log(error);
+        return {result:false, object:[], message:error};
+    }
+}
+
+export const createUser=async(data)=>{
+    try {
+        const existing= await UserModel.findOne({where:{username:data.username}});
+        if(existing!=null) return {result:false, message:'Usuario ya existe'};
+        await UserModel.create({username:data.username, password:data.password});
+        return {result:true, message:'Creado exitosamente'};
+    } catch (error) {
+        console.log(error);
+        return {result:false, message:error};
+    }
+}
+
+export const deleteUser=async(IDUser)=>{
+    try {
+        const res= await UserModel.destroy({where:{IDUser:IDUser}});
+        return res>0;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export const updateUserPassword=async(IDUser, newPassword)=>{
+    try {
+        const res= await UserModel.update({password:newPassword},{where:{IDUser:IDUser}});
+        return res>0;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 
 //apartment
 
@@ -38,6 +82,8 @@ export const createApartment=async(apartment)=>{
             tenantID:apartment.tenantID,
             paymentDay:apartment.paymentDay,
             rentalDate:apartment.rentalDate,
+            maintenance: apartment.maintenance,
+            electricity: apartment.electricity
         })
             console.log('controller',result);
         if(result!= null )
@@ -70,6 +116,25 @@ export const getApartments=async ()=>{
         return {result:0,error:error};
     }
 
+}
+
+export const getApartments2=async ()=>{
+    try {
+    const apartamentos= await apartmentModel.findAll();
+    const ap= []
+        apartamentos.map(a=>{
+            const element= a.dataValues;
+            ap.push(element);
+        })
+
+    console.log('ap',ap)
+    return{result:1,object:ap,message:"extraido exitosamente"}
+    }
+    catch(err)
+    {
+        console.log(err)
+        return{result:0,object:[],message:err}
+    }
 }
 
 export const deleteApartment=async(IDApartment)=>{
@@ -166,12 +231,13 @@ export const getTenant=async (ID)=>{
     try {
         console.log('THE ID',ID)
         const res= await tenantModel.findOne({where:{IDTenant:ID}})
-        if(res > 0)
+        if(res != null)
             return res
         else
-            return 0
+            return null
     } catch (error) {
-        
+        console.log(error)
+        return null
     }
 }
 
@@ -221,10 +287,53 @@ export const getBills= async()=>{
         return {result:false,object:{},error:error}
     }
 }
+
+export const findBill= async (IDBill)=>{
+    const res= await monthlyBillsModel.findOne({where:{IDMonthlyBill:IDBill}});
+    if (res)
+    {
+        try {
+            return{result:true,object:res.dataValues,message:'encontrado exitosamente'};            
+        } catch (error) {
+            return {result:false, object:[],message:error} 
+        }
+    }
+    else
+        return {result:false, object:[],message:'no se puedo encontrar factura'}
+
+}
+
+export const deleteLastDateBill = async (IDBill)=>{
+    let  res = await findBill(IDBill);
+    if (res.result==true) 
+    {
+        try {
+            res= await  getApartments2();
+            if(res.result==true)
+            {
+                 
+            }
+
+
+        } catch (error) {
+            return {result:false,message:error}
+        }
+    }
+    else
+    {
+        console.log(res.message);
+        return {result:false,messsage:'error al eliminar registro'}
+    }
+
+}
+
 export const deleteMonthlyBill= async(IDMonthlyBill)=>{
     try {
-        const res= await monthlyBillsModel.destroy({where:{IDMonthlyBill:IDMonthlyBill}});
-        if (res > 0)
+        let  res= await monthlyBillsModel.destroy({where:{IDMonthlyBill:IDMonthlyBill}});
+        console.log('delete bill:', res);
+        const resDelPay= await  deletePaymentsCascade(IDMonthlyBill);
+        
+        if (res > 0 && resDelPay.result==true)
         {
             return true
         }
@@ -240,81 +349,83 @@ export const deleteMonthlyBill= async(IDMonthlyBill)=>{
 }
 //bills
 export const createBills=async ()=>{
-    const res= await getApartments(); //funcion para tomar los apartamentos
-    const resBills= await getBills();// funcion para tomar las facturas
-    const date= new Date()//objeto fecha
-    const currentDay = date.getDate();// toma el dia actual
-    
+    console.log("CREATE BILLS ");
+    let  res= await getApartments2();
+    const apartments= res.result==true?res.object:[];
+    res=  await getBills();
+    const bills= res.result==true?res.object:[];
 
-    if (res.result==1 && res.object.length  > 0)// asegura de tener los apartamentos
+    const today= new Date();
+    const currentDay= today.getDate();
+    const currentMonth= today.getMonth()+1;
+    const currentYear= today.getFullYear();
+    console.log('today',{currentDay,currentMonth,currentYear});
+    const IDAPBG= [];
+
+    console.log('   RECORRIENDO APARTAMENTOS')
+    for(const apartment of apartments)
     {
-        const arrApartments = res.object; // los toma en el array
-        const apartments = [];
-        arrApartments.map(apartment => {
-            apartments.push(apartment.dataValues)// los separa y toma solo los dataValues
-        })
-        // Toma la fecha de hoy
-        const today = new Date();
-        // Get all bills
-        const billsRes = await getBills();
-        const bills = billsRes.result ? billsRes.object : []; //captura las facturas
-        // Recorre todos los apartamentos y espera a que terminen las operaciones asíncronas
-        let billsCreated = 0;
-        let billsSkipped = 0;
-        for (const a of apartments) {
-            if (a.paymentDay <= currentDay) {
-                // Verifica que haya pasado al menos un mes desde la creación del apartamento
-                let canCreateBill = true;
-                if (a.rentalDate) {
-                    const creationDate = new Date(a.rentalDate);
-                    const creationYear = creationDate.getFullYear();
-                    const creationMonth = creationDate.getMonth(); // 0-indexed
-                    const currentYear = today.getFullYear();
-                    const currentMonth = today.getMonth(); // 0-indexed
-                    // Solo permite crear factura si el mes actual es al menos un mes después de la creación
-                    if ((currentYear === creationYear && currentMonth !== creationMonth)) {
-                        canCreateBill = false;
-                    }
-                }
-                if (!canCreateBill) {
-                    billsSkipped++;
-                    console.log('skip')
-                    console.log(`El apartamento ${a.IDApartment} fue creado este mes, no se genera factura.`);
-                    continue;
-                }
-                // Buscar si ya existe una factura para este mes y apartamento
-                const billThisMonth = bills.find(b => {
-                    if (b.IDApartment !== a.IDApartment) return false;
-                    const billDate = new Date(b.createdAt);
-                    return billDate.getFullYear() === today.getFullYear() && (billDate.getMonth() + 1) === (today.getMonth() + 1);
-                });
-                if (billThisMonth) {
-                    billsSkipped++;
-                    console.log(`Ya existe factura para el apartamento ${a.IDApartment} en este mes:`, billThisMonth);
-                } else {
-                    try {
-                        const objBill = { IDApartment: a.IDApartment, debt: a.rent, day: a.paymentDay,state:-1};
-                        const res = await monthlyBillsModel.create(objBill);
-                        billsCreated++;
-                        console.log('Factura creada exitosamente', res);
-                    } catch (error) {
-                        console.log('Error al crear factura', error);
-                    }
-                }
+        const payDay= apartment.paymentDay;
+        const IDApartment= apartment.IDApartment;
+        const ApartmentBills= bills.filter(b=> b.IDApartment==IDApartment);
+
+        const currentMonthStr = String(currentMonth).padStart(2, '0');
+        const payDayStr = String(payDay).padStart(2, '0');
+        const payDate = `${currentYear}-${currentMonthStr}-${payDayStr}`;
+
+        console.log('       Apartment:', IDApartment, '| payDay:', payDay);
+
+        // Fuente de verdad: verificar si ya existe una factura creada este mes/año
+        const alreadyBilledThisPeriod = ApartmentBills.some(b => {
+            const created = new Date(b.createdAt);
+            return !isNaN(created.getTime()) &&
+                   created.getFullYear() === currentYear &&
+                   (created.getMonth() + 1) === currentMonth;
+        });
+
+        if(alreadyBilledThisPeriod)
+        {
+            console.log('       Ya existe factura para este periodo → omitiendo');
+            continue;
+        }
+
+        if(currentDay >= payDay)
+        {
+            console.log('       Generando factura (dia', currentDay, '>= payDay', payDay, ')');
+            try {
+                await monthlyBillsModel.create({debt:apartment.rent, IDApartment, day:payDay, state:0});
+                IDAPBG.push(IDApartment);
+                await updateLDBG(IDApartment, payDate);
+            } catch (error) {
+                console.log(error);
             }
         }
-        return {
-            result: true,
-            message: `Facturas creadas: ${billsCreated}, ya existentes este mes: ${billsSkipped}`
-        };
+        else
+        {
+            console.log('       Dia actual (', currentDay, ') < payDay (', payDay, ') → esperando');
+        }
     }
-    else
-    {
-        return {result:false,error:'No existen apartamentos o hubo un error a la hora de cargarlos'}
-    }
+
+    return {result:true, generated:IDAPBG};
 }
 
-
+const updateLDBG=async (IDApartment,payDate)=>{
+    console.log('ejecutando UPDATE LDBG')
+    try {
+        const lastDateBillGenerated= payDate;
+        console.log(lastDateBillGenerated);
+        console.log(IDApartment)
+        const res= await apartmentModel.update(
+          { lastDateBillGenerated: lastDateBillGenerated },
+          { where: { IDApartment: IDApartment } }
+        );
+        return {result:true}
+    } catch (error) {
+        console.log(error);
+        return {result:false}
+    }
+    
+}
 export const payBill= async (data)=>{
     const {IDFactura,dineroPagado,payerName}= data
     const d= {IDMonthlyBill:IDFactura,amount:dineroPagado,payerName:payerName}
@@ -327,6 +438,9 @@ export const payBill= async (data)=>{
         return {result: false, message:error}
     }
 }
+
+
+//payments 
 
 export const getPayments= async()=>{
     try {
@@ -408,5 +522,40 @@ export const updateBillState=async ()=>{
     } catch (error) {
         console.log(error)
         return {result:false,object:null, message:error}
+    }
+}
+
+export const deletePaymentsCascade= async (IDMonthlyBill)=>{
+    try {
+            let res= await getPayments();
+            if(res.result==true)
+            {
+                const payments= res.object;
+                console.log("DEL PAYS THE PAYMENT",payments);
+                for(const p of payments)
+                {
+                    console.log("???",[p.IDMonthlyBill,IDMonthlyBill])
+                    if(p.IDMonthlyBill==IDMonthlyBill)
+                    {
+                        const resDel = await paymentsModel.destroy({ where: { IDPaymentModel: p.IDPaymentModel } });
+                        console.log("DELETED PAYMENT ", p.IDPaymentModel);
+                    }
+                }
+            }
+            // Return true whether or not there were related payments - deletion of 0 payments is still success
+            return{result:true,message:""}
+        
+    } catch (error) {
+        return {result:false,message:error}   
+    }
+
+}
+
+export const deletePayment=async(IDPayment)=>{
+    try {
+        const res= await paymentsModel.destroy({where:{IDPaymentModel:IDPayment}})
+        return {result:true,object:[],message:"eliminado exitosamente"}
+    } catch (error) {
+        return {result:false,object:[],message:"Error al eliminar pago"}
     }
 }

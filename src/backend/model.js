@@ -83,9 +83,24 @@ export const apartmentModel= DB.define('Apartament',
             allowNull:true
         },
         rentalDate:{
-            type:DataTypes.DATE,
+            type:DataTypes.DATEONLY,
+            allowNull:true
+        },
+        electricity:{
+            type:DataTypes.DOUBLE,
+            allowNull:true
+        },
+        maintenance:
+        {
+            type:DataTypes.DOUBLE,
+            allowNull:true
+        },
+        lastDateBillGenerated:
+        {
+            type:DataTypes.DATEONLY,
             allowNull:true
         }
+    
     },{
         timestamps:true
     }
@@ -109,7 +124,7 @@ export const tenantModel= DB.define('tenant',{
     },
     birthDate:
     {
-        type:DataTypes.DATE,
+        type:DataTypes.DATEONLY,
         allowNull:true
     },
     maritalStatus:{
@@ -177,6 +192,11 @@ export const paymentsModel= DB.define('payments',{
     }
 
 },{timestamps:true})
+
+
+
+
+
 
 try {
     await DB.sync()

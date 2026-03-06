@@ -5,9 +5,11 @@ import {Pagos} from './components/pagos'
 import { Inicio } from "./components/inicio";
 import { Login } from "./components/login"
 import {Facturas} from './components/facturas'
-import {BrowserRouter as Router,Routes,Route} from 'react-router-dom';
+import {HashRouter as Router,Routes,Route} from 'react-router-dom';
 import { TopBar } from "./components/topBar";
 import { Reportes } from "./components/reportes";
+import { Configuracion } from "./components/configuracion";
+import { User } from "./components/User";
 
 function App() {
  return(
@@ -23,6 +25,8 @@ function App() {
            <Route path="Pagos" element={<Pagos/>}/>
            <Route path="Facturas" element={<Facturas/>}/>
            <Route path="Reportes" element={<Reportes/>}/>
+           <Route path="Config" element ={<Configuracion/>}/>
+           <Route path="User" element ={<User/>}/>
         </Route>
       </Routes>
     </Router>
