@@ -111,7 +111,7 @@ export const Configuracion = () => {
             email_subject: emailSubject,
             email_body: emailBody,
         })
-        if (res.result === true) notify('ConfiguraciÃ³n de correo guardada.')
+        if (res.result === true) notify('Configuracion de correo guardada.')
         else notify('Error al guardar.', 'err')
     }
 
@@ -125,7 +125,7 @@ export const Configuracion = () => {
 
     return (
         <div className="principalCol colAdapt">
-            <h1 className="tituloContainer">ConfiguraciÃ³n</h1>
+            <h1 className="tituloContainer">Configuracion</h1>
 
             {/* â”€â”€ NotificaciÃ³n global â”€â”€ */}
             {notif.msg && (
@@ -193,7 +193,7 @@ export const Configuracion = () => {
                 </div>
             </div>
 
-            {/* â”€â”€ ConfiguraciÃ³n de correo â”€â”€ */}
+
             <div className="containerCover" style={{ marginTop: 0 }}>
                 <div className="apartContainer" style={{ flex: 1 }}>
                     <h2>Servidor de correo (SMTP)</h2>
