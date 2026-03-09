@@ -24,6 +24,7 @@
     "electron-reloader": "^1.2.3",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
+    "nodemailer": "^8.0.2",
     "react-router-dom": "^7.6.2",
     "recharts": "^3.8.0",
     "sequelize": "^6.37.7",

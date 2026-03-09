@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DB } from '../backend/db.js'
-import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant, createBills, getBills, deleteMonthlyBill, payBill, getPayments, updateBillState,deletePayment, getUsers, createUser, deleteUser, updateUserPassword} from '../backend/controller.js'
+import { checkLogin,createApartment, getApartments,deleteApartment,createTenant,getTenants, deleteTenant, getTenant, updateTenant, modifyApartment, findTenant, createBills, getBills, deleteMonthlyBill, payBill, getPayments, updateBillState,deletePayment, getUsers, createUser, deleteUser, updateUserPassword, getSettings, saveSettings, testEmail} from '../backend/controller.js'
 
 
 var mainWindow;
@@ -255,6 +255,18 @@ app.whenReady().then(() => {
     })
     ipcMain.handle('updateUserPassword',async(e,IDUser,newPassword)=>{
       const res= await updateUserPassword(IDUser,newPassword);
+      return res;
+    })
+    ipcMain.handle('getSettings', async () => {
+      const res = await getSettings();
+      return res;
+    })
+    ipcMain.handle('saveSettings', async (e, data) => {
+      const res = await saveSettings(data);
+      return res;
+    })
+    ipcMain.handle('testEmail', async () => {
+      const res = await testEmail();
       return res;
     })
     //screen

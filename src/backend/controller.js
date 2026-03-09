@@ -1,4 +1,5 @@
-import {apartmentModel, monthlyBillsModel, paymentsModel, tenantModel, UserModel } from "./model"
+import {apartmentModel, monthlyBillsModel, paymentsModel, tenantModel, UserModel, SettingsModel } from "./model"
+import nodemailer from 'nodemailer'
 
 export const checkLogin=async (userInfo)=>{
     try {
@@ -347,6 +348,83 @@ export const deleteMonthlyBill= async(IDMonthlyBill)=>{
 
 
 }
+// ── Settings ─────────────────────────────────────────────────────────────────
+export const getSettings = async () => {
+    try {
+        const rows = await SettingsModel.findAll()
+        const obj = {}
+        rows.forEach(r => { obj[r.key] = r.value })
+        return { result: true, object: obj }
+    } catch (error) {
+        console.log(error)
+        return { result: false, object: {} }
+    }
+}
+
+export const saveSettings = async (data) => {
+    try {
+        for (const [key, value] of Object.entries(data)) {
+            await SettingsModel.upsert({ key, value: value ?? '' })
+        }
+        return { result: true }
+    } catch (error) {
+        console.log(error)
+        return { result: false, message: error.message }
+    }
+}
+
+export const testEmail = async () => {
+    try {
+        const { object: cfg } = await getSettings()
+        if (!cfg.smtp_host || !cfg.smtp_user || !cfg.smtp_pass)
+            return { result: false, message: 'Configura el servidor SMTP primero.' }
+        const transporter = nodemailer.createTransport({
+            host: cfg.smtp_host,
+            port: Number(cfg.smtp_port) || 587,
+            secure: Number(cfg.smtp_port) === 465,
+            auth: { user: cfg.smtp_user, pass: cfg.smtp_pass }
+        })
+        await transporter.verify()
+        return { result: true }
+    } catch (error) {
+        console.log(error)
+        return { result: false, message: error.message }
+    }
+}
+
+const sendBillEmail = async (toEmail, tenantName, apartmentName, amount, dueDate) => {
+    try {
+        const { object: cfg } = await getSettings()
+        if (!cfg.smtp_host || !cfg.smtp_user || !cfg.smtp_pass || !toEmail) return
+        const transporter = nodemailer.createTransport({
+            host: cfg.smtp_host,
+            port: Number(cfg.smtp_port) || 587,
+            secure: Number(cfg.smtp_port) === 465,
+            auth: { user: cfg.smtp_user, pass: cfg.smtp_pass }
+        })
+        const fmt = (n) => Number(n ?? 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+        const subject = (cfg.email_subject || 'Aviso de cobro de renta')
+            .replace(/{nombre}/g, tenantName)
+            .replace(/{apartamento}/g, apartmentName)
+            .replace(/{monto}/g, fmt(amount))
+            .replace(/{fecha}/g, dueDate)
+        const body = (cfg.email_body || 'Estimado/a {nombre},\n\nSe ha generado su factura de renta del apartamento "{apartamento}" por un monto de {monto} con fecha {fecha}.\n\nPor favor realice su pago a tiempo.\n\nSaludos.')
+            .replace(/{nombre}/g, tenantName)
+            .replace(/{apartamento}/g, apartmentName)
+            .replace(/{monto}/g, fmt(amount))
+            .replace(/{fecha}/g, dueDate)
+        await transporter.sendMail({
+            from: `"${cfg.smtp_from || 'CRM'}" <${cfg.smtp_user}>`,
+            to: toEmail,
+            subject,
+            text: body
+        })
+        console.log('Email enviado a', toEmail)
+    } catch (error) {
+        console.log('Error enviando email:', error.message)
+    }
+}
+
 //bills
 export const createBills=async ()=>{
     console.log("CREATE BILLS ");
@@ -376,16 +454,35 @@ export const createBills=async ()=>{
         console.log('       Apartment:', IDApartment, '| payDay:', payDay);
 
         // Fuente de verdad: verificar si ya existe una factura creada este mes/año
-        const alreadyBilledThisPeriod = ApartmentBills.some(b => {
+        const existingBill = ApartmentBills.find(b => {
             const created = new Date(b.createdAt);
             return !isNaN(created.getTime()) &&
                    created.getFullYear() === currentYear &&
                    (created.getMonth() + 1) === currentMonth;
         });
 
-        if(alreadyBilledThisPeriod)
+        if(existingBill)
         {
-            console.log('       Ya existe factura para este periodo → omitiendo');
+            // Si la factura existe pero el email aún no fue enviado y hoy ES el día de pago → enviar ahora
+            if(!existingBill.notified && currentDay === payDay && existingBill.IDApartment)
+            {
+                if (apartment.tenantID) {
+                    const tenantRes = await getTenant(apartment.tenantID)
+                    if (tenantRes?.email) {
+                        await sendBillEmail(
+                            tenantRes.email,
+                            apartment.tenantName || tenantRes.fullName,
+                            apartment.name,
+                            apartment.rent,
+                            payDate
+                        )
+                        await monthlyBillsModel.update({ notified: true }, { where: { IDMonthlyBill: existingBill.IDMonthlyBill } })
+                        console.log('       Email enviado (reintento mismo día) para apartamento', IDApartment)
+                    }
+                }
+            } else {
+                console.log('       Ya existe factura para este periodo → omitiendo');
+            }
             continue;
         }
 
@@ -393,9 +490,23 @@ export const createBills=async ()=>{
         {
             console.log('       Generando factura (dia', currentDay, '>= payDay', payDay, ')');
             try {
-                await monthlyBillsModel.create({debt:apartment.rent, IDApartment, day:payDay, state:0});
+                const bill = await monthlyBillsModel.create({debt:apartment.rent, IDApartment, day:payDay, state:0, notified:false});
                 IDAPBG.push(IDApartment);
                 await updateLDBG(IDApartment, payDate);
+                // Enviar email al inquilino si tiene correo (solo una vez, el mismo día)
+                if (apartment.tenantID) {
+                    const tenantRes = await getTenant(apartment.tenantID)
+                    if (tenantRes?.email) {
+                        await sendBillEmail(
+                            tenantRes.email,
+                            apartment.tenantName || tenantRes.fullName,
+                            apartment.name,
+                            apartment.rent,
+                            payDate
+                        )
+                        await bill.update({ notified: true })
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }

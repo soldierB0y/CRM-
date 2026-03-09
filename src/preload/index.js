@@ -80,6 +80,15 @@ const api = {
   updateUserPassword:(IDUser,newPassword)=>{
     return ipcRenderer.invoke('updateUserPassword',IDUser,newPassword);
   },
+  getSettings: () => {
+    return ipcRenderer.invoke('getSettings');
+  },
+  saveSettings: (data) => {
+    return ipcRenderer.invoke('saveSettings', data);
+  },
+  testEmail: () => {
+    return ipcRenderer.invoke('testEmail');
+  },
 
 }
 

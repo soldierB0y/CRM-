@@ -198,8 +198,20 @@ export const paymentsModel= DB.define('payments',{
 
 
 
+export const SettingsModel = DB.define('settings', {
+    key: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+        allowNull: false
+    },
+    value: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    }
+}, { timestamps: false })
+
 try {
-    await DB.sync()
+    await DB.sync({ alter: true })
     console.log('Tabla de usuarios creada con exito')
 } catch (error) {
     console.log(error)
