@@ -196,16 +196,16 @@ export const Reportes = () => {
                     <h2>Renta vs Cobrado por Apartamento</h2>
                     <ResponsiveContainer width="100%" height={260}>
                         <BarChart data={barData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#3c3c3c" />
                             <XAxis dataKey="name" tick={{ fill: '#e6e6e6', fontSize: 11 }} />
                             <YAxis tick={{ fill: '#e6e6e6', fontSize: 11 }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
                             <Tooltip
                                 formatter={v => fmt(v)}
-                                contentStyle={{ background: '#2e2e2e', border: '1px solid #555', borderRadius: 8 }}
+                                contentStyle={{ background: '#2e2e2e', border: '1px solid #b3b3b3', borderRadius: 8 }}
                                 labelStyle={{ color: '#e6e6e6' }}
                             />
-                            <Legend />
-                            <Bar dataKey="Renta" fill="#4a90e2" radius={[4, 4, 0, 0]} />
+                            <Legend wrapperStyle={{ color: '#e6e6e6' }} />
+                            <Bar dataKey="Renta" fill="#b3b3b3" radius={[4, 4, 0, 0]} />
                             <Bar dataKey="Cobrado" fill="#6fcf97" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
