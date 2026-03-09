@@ -1,6 +1,7 @@
 import close from '../assets/imagenes/iconos/close.png'
 import minimize from '../assets/imagenes/iconos/minimize.png'
 import layers from '../assets/imagenes/iconos/layers.png'
+import logo from '../assets/imagenes/logo.svg'
 
 export const TopBar= ()=>{
 
@@ -11,7 +12,7 @@ export const TopBar= ()=>{
     return(
         <div className="topBar">
             <span>
-                <p>RentHouse</p>
+                <img src={logo} alt="HABBO" className="topBarLogo" />
             </span>
             <span className='dragMe'/>
             <span>

@@ -101,7 +101,13 @@ export const Pagos = () => {
                                     <option value="Deuda">Deuda</option>
                                     <option value="Estado">Nombre</option>
                                 </select>
+                                <button className="openCrudBtn" onClick={() => {
+                                    if (selectedID < 0) { setShowMessage("Seleccione un pago para eliminar"); return; }
+                                    setShowMessage('');
+                                    setShowModal(true);
+                                }}>Eliminar</button>
                             </span>
+                            {showMessage && <p className="visible">{showMessage}</p>}
                             <table className="tableInfo">
                                 <thead>
                                     <tr>
@@ -116,73 +122,43 @@ export const Pagos = () => {
                                 <tbody>
                                     {
                                         searchResult.length > 0 ? searchResult.map((p, index) => (
-                                            <>
-                                                <tr
-                                                    className={selectedID == p.IDPaymentModel ? "rowSelected" : ""}
-                                                    onClick={() => {
-                                                        setSelectedID(p.IDPaymentModel)
-                                                        setShowMessage("");
-                                                    }}
-                                                    key={index}
-                                                >
-                                                    <td>{p.IDPaymentModel}</td>
-                                                    <td>{p.IDMonthlyBill}</td>
-                                                    <td>{p.amount}</td>
-                                                    <td>{p.payerName}</td>
-                                                    <td>{p.createdAt.toString()}</td>
-                                                    <td>{p.updatedAt.toString()}</td>
-                                                </tr>
-                                            </>
-                                        )) : <> <p className="visible" >No hay Registros</p></>
+                                            <tr
+                                                className={selectedID == p.IDPaymentModel ? "rowSelected" : ""}
+                                                onClick={() => {
+                                                    setSelectedID(p.IDPaymentModel)
+                                                    setShowMessage("");
+                                                }}
+                                                key={index}
+                                            >
+                                                <td>{p.IDPaymentModel}</td>
+                                                <td>{p.IDMonthlyBill}</td>
+                                                <td>{p.amount}</td>
+                                                <td>{p.payerName}</td>
+                                                <td>{p.createdAt.toString()}</td>
+                                                <td>{p.updatedAt.toString()}</td>
+                                            </tr>
+                                        )) : <tr><td colSpan={6}><p className="visible">No hay Registros</p></td></tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <div className="crud apartContainer">
-                        <h2>Opciones</h2>
-                        <div className="buttonContainer">
-                            <input className="button" value={'eliminar'} type='button'
-                                onClick={() => {
-                                    if (selectedID > -1)
-                                        setShowModal(true)
-                                    else {
-                                        setShowMessage("Debe seleccionar el pago a eliminar")
-                                    }
-                                }}
-                            />
-                        </div>
-                        <p style={{ width: '100%', textAlign: 'center' }}>{
-                            showMessage
-                        }</p>
-                    </div>
                 </section>
-                <div className="modal" style={showModal == true ? { display: 'flex' } : { display: 'none' }}>
-                    <div className="modalPrincipalContainer">
-                        <h2>Eliminar</h2>
-                        <div style={{ flexDirection: 'column' }}>
-                            <h3>Estas seguro que deseas eliminar el Pago?</h3>
-                            <p
-                                style={{ display: 'flex', height: "50px", alignItems: 'center', paddingLeft: "10%" }}
-                            >Si elimina este pago, alterara el estado de pagada o abonada a la factura correspondiente</p>
-                        </div>
-                        <div className="modalButtonContainer">
-                            <button
-                                onClick={() => {
 
-
-                                    setShowModal(false)
-
-                                }}
-                            >Cancelar</button>
-                            <button
-                                onClick={() => {
-                                    eliminarPago();
-                                }}
-                            >Si</button>
+                {/* ── Modal Eliminar ── */}
+                {showModal && (
+                    <div className="crudOverlay">
+                        <div className="crudModalBox">
+                            <button className="crudModalClose" onClick={() => setShowModal(false)}>✕</button>
+                            <h2>Eliminar Pago #{selectedID}</h2>
+                            <p style={{ textAlign: 'center' }}>¿Estás seguro? Esto alterará el estado de la factura correspondiente.</p>
+                            <div className="buttonContainer">
+                                <input type="button" value="Sí, eliminar" onClick={eliminarPago} />
+                                <input type="button" value="Cancelar" onClick={() => setShowModal(false)} />
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </>)
 }

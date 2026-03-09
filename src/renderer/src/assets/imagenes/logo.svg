@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" fill="none">
+
+  <!-- ── Building icon (pixel-art apartment) ── -->
+  <!-- Antenna -->
+  <rect x="17" y="0" width="2" height="5" fill="#808080"/>
+  <rect x="14" y="3" width="8" height="2" fill="#808080"/>
+
+  <!-- Rooftop floor -->
+  <rect x="6" y="5" width="24" height="5" fill="#b3b3b3" rx="1"/>
+
+  <!-- Main building body -->
+  <rect x="2" y="9" width="32" height="27" fill="#e6e6e6" rx="1"/>
+
+  <!-- Floor dividers -->
+  <rect x="2" y="17" width="32" height="1" fill="#c8c8c8"/>
+  <rect x="2" y="25" width="32" height="1" fill="#c8c8c8"/>
+
+  <!-- Windows row 1 (top floor) -->
+  <rect x="5"  y="11" width="7" height="4" fill="#2e2e2e" rx="0.5"/>
+  <rect x="15" y="11" width="7" height="4" fill="#505050" rx="0.5"/>
+  <rect x="25" y="11" width="7" height="4" fill="#2e2e2e" rx="0.5"/>
+
+  <!-- Windows row 2 (mid floor) - some lit -->
+  <rect x="5"  y="19" width="7" height="4" fill="#505050" rx="0.5"/>
+  <rect x="15" y="19" width="7" height="4" fill="#2e2e2e" rx="0.5"/>
+  <rect x="25" y="19" width="7" height="4" fill="#505050" rx="0.5"/>
+
+  <!-- Ground floor: two side windows + central door -->
+  <rect x="5"  y="27" width="7" height="9" fill="#2e2e2e" rx="0.5"/>
+  <rect x="25" y="27" width="7" height="9" fill="#505050" rx="0.5"/>
+
+  <!-- Door -->
+  <rect x="14" y="28" width="8" height="8" fill="#3c3c3c" rx="1"/>
+  <!-- Door knob -->
+  <circle cx="21" cy="32" r="0.8" fill="#808080"/>
+  <!-- Door step -->
+  <rect x="12" y="35" width="12" height="2" fill="#b3b3b3" rx="0.5"/>
+
+  <!-- ── Wordmark ── -->
+  <text
+    x="44" y="29"
+    font-family="Silkscreen, 'Courier New', monospace"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="3"
+    fill="#e6e6e6"
+  >HABBO</text>
+
+</svg>

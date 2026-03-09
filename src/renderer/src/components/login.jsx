@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import apartment from '../assets/imagenes/apartment.png'
+import logo from '../assets/imagenes/logo.svg'
 import { useNavigate } from 'react-router-dom';
 export const Login = () => {
   const navigator = useNavigate();
@@ -20,10 +21,10 @@ export const Login = () => {
     <>
 
       <section className='loginBody'>
-        <h1 className='title'>RentHouse</h1>
+        <img src={logo} alt="HABBO" className='titleLogo' />
         <img src={apartment} className='picLogin'></img>
         <div className='login'>
-          <h1>Login</h1>
+          <img src={logo} alt="HABBO" className='loginLogo' />
           <input
             value={userInfo.user}
             onChange={(e) => {

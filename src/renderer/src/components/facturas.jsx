@@ -6,14 +6,12 @@ export const Facturas = () => {
     const [searchFilter, setSearchFilter] = useState("")
     const [searchField, setSearchField] = useState("Dia")
     const [searchResult, setSearchResult] = useState([]);
-    const [envPay, setEnvPay] = useState('invisible');
-    const [errPay, setErrPay] = useState('invisible');
     const [IDFactura, setIDFactura] = useState(-1)
     const [state, setState] = useState(null);
     const navigator = useNavigate();
     const [montoPago, setMontoPago] = useState(-1)
     const [dineroPagado, setDineroPagado] = useState(0.00)
-    const [showModal, setShowModal] = useState(false);
+    const [showModalPay, setShowModalPay] = useState(false);
     const [showModalDel, setShowModalDel] = useState(false);
     const [modalMessage, setModalMessage] = useState('')
     const [showMessage, setShowMessage] = useState('')
@@ -34,8 +32,8 @@ export const Facturas = () => {
         )()
 
         //Cerrar modales si estan abiertos
-        if (showModal == true)
-            setShowModal(false)
+        if (showModalPay == true)
+            setShowModalPay(false)
         if (showModalDel == true)
             setShowModalDel(false)
     }, [])
@@ -92,14 +90,14 @@ export const Facturas = () => {
                         setAbonar(false);
                         setPayerName("");
                         setIDFactura(-1);
-                        setEnvPay("visible");
-                        setShowModal(false);
+                        setShowModalPay(false);
+                        setShowMessage("Pagado exitosamente");
                         setTimeout(() => {
                             navigator("/Inicio/Pagos")
                         }, 2000);
                     }
                     else if (res.result == false) {
-                        setErrPay("visible");
+                        setModalMessage("Error al procesar el pago. Intentelo nuevamente");
                     }
                 }
             )()
@@ -110,15 +108,9 @@ export const Facturas = () => {
         const res = await window.api.updateBillState();
     }
 
-    const limpiar = () => {
-        setEnvPay("invisible");
-        setErrPay("invisible");
-    }
-
     const reloadBills = () => {
         getBills();
     }
-    //Eliminar Factura
 
     const eliminarFactura = () => {
         if (IDFactura > 0) {
@@ -126,29 +118,24 @@ export const Facturas = () => {
                 async () => {
                     const res = await window.api.deleteMonthlyBill(IDFactura);
                     console.log(res)
+                    setShowModalDel(false)
                     if (res == true) {
                         getBills()
-                        setModalMessage("Eliminado exitosamente")
-
+                        setShowMessage("Eliminado exitosamente")
                     }
                     else {
-
-                        setModalMessage("Error al eliminar factura")
+                        setShowMessage("Error al eliminar factura")
                     }
-                    setShowModalDel(false)
                     reloadBills();
                 }
             )()
-
         }
     }
 
     return (
         <>
             <div className="principalCol colAdapt">
-                <h1 className="tituloContainer">
-                    Facturas
-                </h1>
+                <h1 className="tituloContainer">Facturas</h1>
                 <section className="containerCover">
                     <div className="apartContainer">
                         <h2>Mis Facturas</h2>
@@ -165,7 +152,20 @@ export const Facturas = () => {
                                     <option value={"Deuda"}>Deuda</option>
                                     <option value={"Estado"}>Estado</option>
                                 </select>
+                                <button className="openCrudBtn" onClick={() => {
+                                    if (IDFactura < 0) { setShowMessage("Seleccione una factura"); return; }
+                                    if (state == 1) { setShowMessage("Esta factura ya ha sido pagada"); return; }
+                                    setModalMessage('');
+                                    setShowMessage('');
+                                    setShowModalPay(true);
+                                }}>Pagar</button>
+                                <button className="openCrudBtn" onClick={() => {
+                                    if (IDFactura < 0) { setShowMessage("Seleccione una factura"); return; }
+                                    setShowMessage('');
+                                    setShowModalDel(true);
+                                }}>Eliminar</button>
                             </span>
+                            {showMessage && <p className="visible">{showMessage}</p>}
                             <table className="tableInfo">
                                 <thead>
                                     <tr>
@@ -180,153 +180,84 @@ export const Facturas = () => {
                                 </thead>
                                 <tbody>
                                     {
-                                        searchResult.length > 0 ? searchResult.map(b => (
-                                            <>
-                                                <tr
-                                                    className={IDFactura == b.IDMonthlyBill ? "rowSelected" : ""}
-                                                    onClick={() => {
-                                                        setIDFactura(b.IDMonthlyBill)
-                                                        setMontoPago(b.debt)
-                                                        setState(b.state);
-                                                        setShowMessage("")
-                                                    }}
-                                                >
-                                                    <td>{b.IDMonthlyBill}</td>
-                                                    <td>{b.IDApartment}</td>
-                                                    <td>{b.day}</td>
-                                                    <td>{b.debt}</td>
-                                                    <td>{b.state == 0 ? 'pendiente' : 'pagado'}</td>
-                                                    <td>{b.createdAt?.toString()}</td>
-                                                    <td>{b.updatedAt?.toString()}</td>
-                                                </tr>
-                                            </>
-                                        )) : <> <p className="visible" >No hay Registros</p></>
+                                        searchResult.length > 0 ? searchResult.map((b, i) => (
+                                            <tr key={i}
+                                                className={IDFactura == b.IDMonthlyBill ? "rowSelected" : ""}
+                                                onClick={() => {
+                                                    setIDFactura(b.IDMonthlyBill)
+                                                    setMontoPago(b.debt)
+                                                    setState(b.state);
+                                                    setShowMessage("")
+                                                }}
+                                            >
+                                                <td>{b.IDMonthlyBill}</td>
+                                                <td>{b.IDApartment}</td>
+                                                <td>{b.day}</td>
+                                                <td>{b.debt}</td>
+                                                <td>{b.state == 0 ? 'pendiente' : 'pagado'}</td>
+                                                <td>{b.createdAt?.toString()}</td>
+                                                <td>{b.updatedAt?.toString()}</td>
+                                            </tr>
+                                        )) : <tr><td colSpan={7}><p className="visible">No hay Registros</p></td></tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <div className="crud apartContainer">
-                        <h2>Opciones</h2>
-                        <div className="buttonContainer">
-                            <input className="button" value={'pagar'} type='button'
-                                onClick={() => {
-                                    if (state != 1) {
-                                        setShowModal(true)
-                                    }
-                                    else {
-                                        setShowMessage("Esta Factura ya ha sido Pagada")
-                                    }
-                                }}
-                            />
-                            <input className="button" value={'eliminar'} type='button'
-                                onClick={() => {
-                                    setShowModalDel(true)
-                                }}
-                            />
-                        </div>
-                        <p className={envPay}>Pagado Exitosamente</p>
-                        <p className="visible">{showMessage}</p>
-                        <p className={errPay}>Error al procesar el pago.<br /> Intentelo Nuevamente</p>
-
-                    </div>
                 </section>
-                {/*Modal Pagar */}
-                <div className="modal" style={showModal == true ? { display: "flex" } : { display: "none" }}>
-                    <div className="modalPrincipalContainer">
-                        <h2>
-                            Pagar
-                        </h2>
-                        <div>
-                            <p>Total:{montoPago}</p>
-                            <p>Monto:</p>
-                            <input className="inputMonto" type='number' value={dineroPagado}
-                                onChange={(e) => {
 
-                                    if (e.target.value.toString() != "") {
-                                        if (e.target.value >= 0) {
-                                            setDineroPagado(e.target.value)
-                                        }
-                                        else {
-                                            setDineroPagado(0)
-                                        }
-                                    }
-                                    else {
-                                        setDineroPagado(0)
-                                    }
-
-
-                                }}
-                            />
-                            <span>
-                                <input type='checkbox' value={abonar}
-                                    onChange={(e) => {
-                                        setAbonar(e.target.checked)
-                                    }}
+                {/* ── Modal Pagar ── */}
+                {showModalPay && (
+                    <div className="crudOverlay">
+                        <div className="crudModalBox">
+                            <button className="crudModalClose" onClick={() => { setShowModalPay(false); setModalMessage(''); }}>✕</button>
+                            <h2>Pagar Factura #{IDFactura}</h2>
+                            <div className="crudForm">
+                                <input type="number" placeholder={`Total: ${montoPago}`}
+                                    value={dineroPagado}
+                                    onChange={e => setDineroPagado(e.target.value >= 0 ? e.target.value : 0)}
                                 />
-                                <label>Abonar</label>
-                            </span>
-                        </div>
-                        <div className="modalInputNameContainer">
-                            <label>Nombre:</label>
-                            <input placeholder="nombre" type='text' value={payerName}
-                                onChange={(e) => {
-                                    setPayerName(e.target.value)
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="modalButtonContainer">
-                        <button
-                            onClick={() => {
-                                if ((dineroPagado < montoPago && (abonar == false || dineroPagado == 0)) || payerName == "") {
-                                    if (dineroPagado > 0)
-                                        setModalMessage("Para un monto menor al total marque abonar")
-                                    else
-                                        setModalMessage("El monto a pagar debe ser mayor a 0")
-
-                                    if (payerName == "") {
-                                        setModalMessage("Ingrese el nombre de quien esta pagando")
-                                    }
-
-
-                                }
-                                else {
-                                    setModalMessage("")
-                                    pagarFactura()
-                                }
-                            }}
-                        >Pagar</button>
-                        <button
-                            onClick={() => { setShowModal(false) }}
-                        >cancelar</button>
-                    </div>
-                    <p>{modalMessage}</p>
-                </div>
-                {/*Modal Eliminar */}
-                <div className="modal" style={showModalDel == true ? { display: 'flex' } : { display: 'none' }}>
-                    <div className="modalPrincipalContainer">
-                        <h2>Eliminar</h2>
-                        <div style={{ flexDirection: 'column' }}>
-                            <h3>Estas seguro que deseas eliminar la factura?</h3>
-                            <p
-                                style={{ display: 'flex', height: "50px", alignItems: 'center', paddingLeft: "10%" }}
-                            >Al eliminar esta factura, tambien eliminara los pagos anteriormente realizados que se encuentren vinculados</p>
-                        </div>
-                        <div className="modalButtonContainer">
-                            <button
-                                onClick={() => {
-                                    setShowModalDel(false)
-                                }}
-                            >Cancelar</button>
-                            <button
-                                onClick={() => {
-                                    eliminarFactura();
-                                }}
-                            >Si</button>
+                                <input type="text" placeholder="Nombre del pagador"
+                                    value={payerName}
+                                    onChange={e => setPayerName(e.target.value)}
+                                />
+                                <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <input type="checkbox" checked={abonar}
+                                        onChange={e => setAbonar(e.target.checked)}
+                                    />
+                                    Abonar
+                                </label>
+                            </div>
+                            {modalMessage && <p className="visible">{modalMessage}</p>}
+                            <div className="buttonContainer">
+                                <input type="button" value="Pagar" onClick={() => {
+                                    if ((dineroPagado < montoPago && !abonar) || dineroPagado == 0)
+                                        return setModalMessage(dineroPagado > 0 ? "Para un monto menor al total marque abonar" : "El monto debe ser mayor a 0");
+                                    if (!payerName)
+                                        return setModalMessage("Ingrese el nombre de quien está pagando");
+                                    setModalMessage('');
+                                    pagarFactura();
+                                }} />
+                                <input type="button" value="Cancelar" onClick={() => { setShowModalPay(false); setModalMessage(''); }} />
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
+
+                {/* ── Modal Eliminar ── */}
+                {showModalDel && (
+                    <div className="crudOverlay">
+                        <div className="crudModalBox">
+                            <button className="crudModalClose" onClick={() => setShowModalDel(false)}>✕</button>
+                            <h2>Eliminar Factura #{IDFactura}</h2>
+                            <p style={{ textAlign: 'center' }}>¿Estás seguro? También se eliminarán los pagos vinculados a esta factura.</p>
+                            <div className="buttonContainer">
+                                <input type="button" value="Sí, eliminar" onClick={eliminarFactura} />
+                                <input type="button" value="Cancelar" onClick={() => setShowModalDel(false)} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </>)
 }

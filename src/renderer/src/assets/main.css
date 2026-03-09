@@ -113,6 +113,24 @@
     color:#3c3c3c;
 }
 
+.titleLogo
+{
+    position: absolute;
+    z-index: 1000;
+    top: 7%;
+    height: 52px;
+    width: auto;
+    filter: none;
+}
+
+.loginLogo
+{
+    height: 36px;
+    width: auto;
+    margin-bottom: 8px;
+    filter: none;
+}
+
 
 .visible
 {
@@ -546,6 +564,14 @@
     align-items: center;
 }
 
+.topBarLogo
+{
+    height: 28px;
+    width: auto;
+    filter: none !important;
+    pointer-events: none;
+}
+
 .topBar span img
 {
     width: 100%;
@@ -836,6 +862,112 @@
 }
 
 
+
+/* ── Reports module ── */
+.rpt-cards
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 10px 4px;
+}
+
+.rpt-card
+{
+    flex: 1;
+    min-width: 180px;
+    border-radius: 16px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #2e2e2e;
+    border-left: 5px solid #b3b3b3;
+}
+
+.rpt-card--blue  { border-left-color: #e6e6e6; }
+.rpt-card--green { border-left-color: #b3b3b3; }
+.rpt-card--yellow{ border-left-color: #808080; }
+.rpt-card--teal  { border-left-color: #505050; }
+
+.rpt-card__label
+{
+    font-size: 13px;
+    color: #b3b3b3;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rpt-card__value
+{
+    font-size: 26px;
+    color: #e6e6e6;
+}
+
+.rpt-card__sub
+{
+    font-size: 13px;
+    color: #808080;
+}
+
+.rpt-bar__wrap
+{
+    position: relative;
+    width: 100%;
+    height: 18px;
+    background-color: #505050;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.rpt-bar__fill
+{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #505050, #e6e6e6);
+    border-radius: 50px;
+    transition: width .4s ease;
+}
+
+.rpt-bar__label
+{
+    position: absolute;
+    right: 6px;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #e6e6e6;
+    z-index: 1;
+}
+
+/* ── Charts ── */
+.rpt-charts-row
+{
+    display: flex;
+    gap: 20px;
+    padding: 0 10px 20px;
+    flex-wrap: wrap;
+}
+.rpt-chart-box
+{
+    flex: 1;
+    min-width: 320px;
+    background: #2e2e2e;
+    border: 1px solid #b3b3b3;
+    border-radius: 16px;
+    padding: 20px 20px 10px;
+}
+.rpt-chart-box h2
+{
+    color: #e6e6e6;
+    margin: 0 0 12px;
+    font-size: 16px;
+}
 
 @media(max-width:1640px)
 {

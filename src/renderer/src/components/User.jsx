@@ -6,9 +6,11 @@ export const User = () => {
     const [form, setForm] = useState({ username: '', password: '', confirmPassword: '' });
     const [newPass, setNewPass] = useState('');
     const [confirmNewPass, setConfirmNewPass] = useState('');
-    const [showModal, setShowModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showPassModal, setShowPassModal] = useState(false);
     const [showDelModal, setShowDelModal] = useState(false);
     const [msg, setMsg] = useState({ text: '', type: '' }); // type: 'ok' | 'err'
+    const [modalMsg, setModalMsg] = useState('');
 
     useEffect(() => {
         loadUsers();
@@ -25,15 +27,17 @@ export const User = () => {
     };
 
     const handleCreate = async () => {
-        if (!form.username || !form.password) return showMessage('Rellene usuario y contraseña', 'err');
-        if (form.password !== form.confirmPassword) return showMessage('Las contraseñas no coinciden', 'err');
+        if (!form.username || !form.password) return setModalMsg('Rellene usuario y contraseña');
+        if (form.password !== form.confirmPassword) return setModalMsg('Las contraseñas no coinciden');
         const res = await window.api.createUser({ username: form.username, password: form.password });
         if (res.result) {
-            showMessage('Usuario creado exitosamente', 'ok');
             setForm({ username: '', password: '', confirmPassword: '' });
+            setModalMsg('');
+            setShowCreateModal(false);
+            showMessage('Usuario creado exitosamente', 'ok');
             loadUsers();
         } else {
-            showMessage(typeof res.message === 'string' ? res.message : 'Error al crear usuario', 'err');
+            setModalMsg(typeof res.message === 'string' ? res.message : 'Error al crear usuario');
         }
     };
 
@@ -51,25 +55,46 @@ export const User = () => {
     };
 
     const handleChangePass = async () => {
-        if (!newPass) return showMessage('Ingrese la nueva contraseña', 'err');
-        if (newPass !== confirmNewPass) return showMessage('Las contraseñas no coinciden', 'err');
-        if (selectedID < 0) return showMessage('Seleccione un usuario', 'err');
+        if (!newPass) return setModalMsg('Ingrese la nueva contraseña');
+        if (newPass !== confirmNewPass) return setModalMsg('Las contraseñas no coinciden');
         const res = await window.api.updateUserPassword(selectedID, newPass);
-        setShowModal(false);
-        setNewPass('');
-        setConfirmNewPass('');
-        if (res) showMessage('Contraseña actualizada exitosamente', 'ok');
-        else showMessage('Error al actualizar contraseña', 'err');
+        if (res) {
+            setShowPassModal(false);
+            setNewPass('');
+            setConfirmNewPass('');
+            setModalMsg('');
+            showMessage('Contraseña actualizada exitosamente', 'ok');
+        } else {
+            setModalMsg('Error al actualizar contraseña');
+        }
     };
 
     return (
         <div className="principalCol colAdapt">
             <h1 className="tituloContainer">Usuarios</h1>
             <section className="containerCover">
-                {/* Tabla de usuarios */}
                 <div className="apartContainer">
                     <h2>Usuarios del Sistema</h2>
                     <div className="searchContainer">
+                        <span className="searchButtons">
+                            <button className="openCrudBtn" onClick={() => { setModalMsg(''); setShowCreateModal(true); }}>
+                                + Nuevo Usuario
+                            </button>
+                            <button className="openCrudBtn" onClick={() => {
+                                if (selectedID < 0) return showMessage('Seleccione un usuario', 'err');
+                                setModalMsg(''); setNewPass(''); setConfirmNewPass('');
+                                setShowPassModal(true);
+                            }}>Cambiar Clave</button>
+                            <button className="openCrudBtn" onClick={() => {
+                                if (selectedID < 0) return showMessage('Seleccione un usuario', 'err');
+                                setShowDelModal(true);
+                            }}>Eliminar</button>
+                        </span>
+                        {msg.text && (
+                            <p className="visible" style={{ color: msg.type === 'ok' ? '#e6e6e6' : '#b3b3b3' }}>
+                                {msg.text}
+                            </p>
+                        )}
                         <table className="tableInfo">
                             <thead>
                                 <tr>
@@ -88,90 +113,81 @@ export const User = () => {
                                         <td>{u.username}</td>
                                         <td>{u.createdAt?.toString()}</td>
                                     </tr>
-                                )) : <tr><td>No hay usuarios</td></tr>}
+                                )) : <tr><td colSpan={3}>No hay usuarios</td></tr>}
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                {/* Panel derecho */}
-                <div className="crud apartContainer">
-                    <h2>Nuevo Usuario</h2>
-                    <div className="crudForm">
-                        <input type="text" placeholder="nombre de usuario"
-                            value={form.username}
-                            onChange={e => setForm({ ...form, username: e.target.value })}
-                        />
-                        <input type="password" placeholder="contraseña"
-                            value={form.password}
-                            onChange={e => setForm({ ...form, password: e.target.value })}
-                        />
-                        <input type="password" placeholder="confirmar contraseña"
-                            value={form.confirmPassword}
-                            onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-                        />
-                    </div>
-                    <div className="buttonContainer">
-                        <input type="button" value="Agregar" className="button"
-                            onClick={handleCreate}
-                        />
-                        <input type="button" value="Cambiar Clave" className="button"
-                            onClick={() => {
-                                if (selectedID < 0) return showMessage('Seleccione un usuario', 'err');
-                                setShowModal(true);
-                            }}
-                        />
-                        <input type="button" value="Eliminar" className="button"
-                            onClick={() => {
-                                if (selectedID < 0) return showMessage('Seleccione un usuario', 'err');
-                                setShowDelModal(true);
-                            }}
-                        />
-                    </div>
-                    {msg.text && (
-                        <p style={{ color: msg.type === 'ok' ? '#6cff8e' : '#ff6c6c', textAlign: 'center' }}>
-                            {msg.text}
-                        </p>
-                    )}
-                </div>
             </section>
 
-            {/* Modal cambiar contraseña */}
-            <div className="modal" style={showModal ? { display: 'flex' } : { display: 'none' }}>
-                <div className="modalPrincipalContainer">
-                    <h2>Cambiar Contraseña</h2>
-                    <div style={{ flexDirection: 'column' }}>
-                        <input type="password" placeholder="nueva contraseña"
-                            value={newPass}
-                            onChange={e => setNewPass(e.target.value)}
-                            style={{ width: '80%', height: '30px', borderRadius: '5px', border: 'none', paddingLeft: '10px', margin: '5px 0' }}
-                        />
-                        <input type="password" placeholder="confirmar contraseña"
-                            value={confirmNewPass}
-                            onChange={e => setConfirmNewPass(e.target.value)}
-                            style={{ width: '80%', height: '30px', borderRadius: '5px', border: 'none', paddingLeft: '10px', margin: '5px 0' }}
-                        />
+            {/* ── Modal Nuevo Usuario ── */}
+            {showCreateModal && (
+                <div className="crudOverlay">
+                    <div className="crudModalBox">
+                        <button className="crudModalClose" onClick={() => { setShowCreateModal(false); setModalMsg(''); }}>✕</button>
+                        <h2>Nuevo Usuario</h2>
+                        <div className="crudForm">
+                            <input type="text" placeholder="nombre de usuario"
+                                value={form.username}
+                                onChange={e => setForm({ ...form, username: e.target.value })}
+                            />
+                            <input type="password" placeholder="contraseña"
+                                value={form.password}
+                                onChange={e => setForm({ ...form, password: e.target.value })}
+                            />
+                            <input type="password" placeholder="confirmar contraseña"
+                                value={form.confirmPassword}
+                                onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+                            />
+                        </div>
+                        {modalMsg && <p className="visible">{modalMsg}</p>}
+                        <div className="buttonContainer">
+                            <input type="button" value="Agregar" onClick={handleCreate} />
+                            <input type="button" value="Cancelar" onClick={() => { setShowCreateModal(false); setModalMsg(''); }} />
+                        </div>
                     </div>
                 </div>
-                <div className="modalButtonContainer">
-                    <button onClick={() => { setShowModal(false); setNewPass(''); setConfirmNewPass(''); }}>Cancelar</button>
-                    <button onClick={handleChangePass}>Guardar</button>
-                </div>
-            </div>
+            )}
 
-            {/* Modal eliminar */}
-            <div className="modal" style={showDelModal ? { display: 'flex' } : { display: 'none' }}>
-                <div className="modalPrincipalContainer">
-                    <h2>Eliminar Usuario</h2>
-                    <div style={{ flexDirection: 'column' }}>
-                        <h3>¿Estás seguro que deseas eliminar este usuario?</h3>
+            {/* ── Modal Cambiar Contraseña ── */}
+            {showPassModal && (
+                <div className="crudOverlay">
+                    <div className="crudModalBox">
+                        <button className="crudModalClose" onClick={() => { setShowPassModal(false); setModalMsg(''); }}>✕</button>
+                        <h2>Cambiar Contraseña</h2>
+                        <div className="crudForm">
+                            <input type="password" placeholder="nueva contraseña"
+                                value={newPass}
+                                onChange={e => setNewPass(e.target.value)}
+                            />
+                            <input type="password" placeholder="confirmar contraseña"
+                                value={confirmNewPass}
+                                onChange={e => setConfirmNewPass(e.target.value)}
+                            />
+                        </div>
+                        {modalMsg && <p className="visible">{modalMsg}</p>}
+                        <div className="buttonContainer">
+                            <input type="button" value="Guardar" onClick={handleChangePass} />
+                            <input type="button" value="Cancelar" onClick={() => { setShowPassModal(false); setModalMsg(''); }} />
+                        </div>
                     </div>
                 </div>
-                <div className="modalButtonContainer">
-                    <button onClick={() => setShowDelModal(false)}>Cancelar</button>
-                    <button onClick={handleDelete}>Sí, eliminar</button>
+            )}
+
+            {/* ── Modal Eliminar ── */}
+            {showDelModal && (
+                <div className="crudOverlay">
+                    <div className="crudModalBox">
+                        <button className="crudModalClose" onClick={() => setShowDelModal(false)}>✕</button>
+                        <h2>Eliminar Usuario</h2>
+                        <p style={{ textAlign: 'center' }}>¿Estás seguro que deseas eliminar este usuario?</p>
+                        <div className="buttonContainer">
+                            <input type="button" value="Sí, eliminar" onClick={handleDelete} />
+                            <input type="button" value="Cancelar" onClick={() => setShowDelModal(false)} />
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
