@@ -969,6 +969,44 @@
     font-size: 16px;
 }
 
+/* ── Configuracion ── */
+.cfg-notif
+{
+    margin: 0 10px 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 14px;
+    background: #2e2e2e;
+}
+.cfg-section
+{
+    margin-top: 18px;
+    padding: 16px;
+    background: #1212124f;
+    border: 1px solid #3c3c3c;
+    border-radius: 14px;
+}
+.cfg-section h3
+{
+    color: #b3b3b3;
+    font-size: 14px;
+    margin: 0 0 12px;
+}
+.cfg-row
+{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+.cfg-col
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 @media(max-width:1640px)
 {
   .containerCover
